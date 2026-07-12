@@ -4,7 +4,7 @@ This file provides guidance to Claude Code / OpenCode when working with code in 
 
 ## Project
 
-**BrandForge** — an A2MCP agent (not a web app) that delivers brand intelligence via x402-gated endpoints. Agents call endpoints directly; payment settles per call in USDT0 on X Layer. No login, no session state, no UI.
+**BrandCanvas** — an A2MCP agent (not a web app) that delivers brand intelligence via x402-gated endpoints. Agents call endpoints directly; payment settles per call in USDT0 on X Layer. No login, no session state, no UI.
 
 Hackathon: OKX.AI Genesis Hackathon · Deadline Jul 17 2026
 
@@ -111,7 +111,7 @@ PORT=3000
 When uncertain about OKX.AI, Onchain OS, x402 protocol, or payment SDK behavior, consult these sources **in order**:
 
 1. **Primary:** `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/SamuelOS/Knowledge/Sources/` — OKX docs archive
-2. **Project context:** `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/SamuelOS/Projects/BrandForge.md`
+2. **Project context:** `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/SamuelOS/Projects/BrandCanvas.md`
 3. **SDK reference:** `references/payments/` and `references/onchainos-skills/` in this repo
 4. **Glowfy reference:** `~/Workspace/Hacks/skin-beauty-agent/` — confirmed working x402 + Bedrock implementation. Read it when stuck on payment or AI patterns.
 
@@ -129,11 +129,11 @@ The `references/` folder is **READ-ONLY context**. Never include it in the proje
 ### Project Status Log
 
 After each major update, append a dated entry to:
-**`~/Library/Mobile Documents/iCloud~md~obsidian/Documents/SamuelOS/Projects/BrandForge.md`**
+**`~/Library/Mobile Documents/iCloud~md~obsidian/Documents/SamuelOS/Projects/BrandCanvas.md`**
 
 ## Key Docs
 
-- `docs/BRANDFORGE.md` — implementation overview, stack, traps, build phases
+- `docs/BRANDCANVAS.md` — implementation overview, stack, traps, build phases
 - `docs/ideas/PRD.md` — full product spec (single source of truth for endpoints, pricing, deploy)
 - `references/brandpull/` — extraction core to port (READ-ONLY)
 - `references/payments/` — OKX x402 SDK reference (READ-ONLY)
@@ -177,4 +177,4 @@ Use the `superpowers:subagent-driven-development` skill for all implementation w
 
 - The bare `onchainos` CLI v4.2.0–v4.2.2 has provisioning bugs. Always run Onchain OS through an agent.
 - Playwright requires `--no-sandbox` in Linux/Docker. Already confirmed in spike.
-- `better-sqlite3` is NOT needed — BrandForge has no DB. Extraction is stateless per-call.
+- `better-sqlite3` is NOT needed — BrandCanvas has no DB. Extraction is stateless per-call.

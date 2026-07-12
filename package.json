@@ -1,5 +1,5 @@
 {
-  "name": "brand-forge-agent",
+  "name": "brand-canvas-agent",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "lint": "biome lint .",

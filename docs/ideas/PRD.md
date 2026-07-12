@@ -1,4 +1,4 @@
-# BrandForge — Agent-Native Brand Intelligence & Creation
+# BrandCanvas — Agent-Native Brand Intelligence & Creation
 
 ## What
 
@@ -28,7 +28,7 @@ LLMs CANNOT do this by prompting alone. Extracting a brand kit requires RENDERIN
 | **@brandsystem/mcp** | Headless Chrome MCP | Free (self-hosted) | Lives in Claude/VS Code dev tool world — not monetized, not on OKX.AI. |
 | **Web3 Brand Workflow** | OKX.AI, manual/negotiable | Negotiable | **0 sales.** Poorly differentiated, human-freelancer model. |
 
-**Nobody does per-call agent-native pricing. Nobody generates. BrandForge is the only agent on OKX.AI doing real-browser extraction.**
+**Nobody does per-call agent-native pricing. Nobody generates. BrandCanvas is the only agent on OKX.AI doing real-browser extraction.**
 
 ### PMF evidence
 
@@ -44,7 +44,7 @@ Per-call pricing has zero market precedent — every competitor requires $49–$
 
 ### Pricing verdict
 
-| Endpoint | BrandForge price | Closest comparable | Verdict |
+| Endpoint | BrandCanvas price | Closest comparable | Verdict |
 |---|---|---|---|
 | `/brand/extract` | $0.30 | Brandfetch overage: $0.10 (cached DB) | Justified — live Playwright extraction covers any URL Brandfetch misses |
 | `/brand/colors` | $0.05 | No per-component pricing exists | Competitive |
@@ -61,7 +61,7 @@ Per-call pricing has zero market precedent — every competitor requires $49–$
 - `Web3 Brand Workflow` — **0 sales**, negotiable — the cautionary tale
 - **Zero URL→brand-kit agents on the platform. Category is open.**
 
-### 3 gaps BrandForge owns
+### 3 gaps BrandCanvas owns
 
 1. **Per-call no-subscription pricing** — first and only brand intelligence service with zero-subscription agent access
 2. **Live extraction for the 99%** — Brandfetch covers 44M brands; 300M+ websites exist. Playwright renders anything, any time
@@ -69,7 +69,7 @@ Per-call pricing has zero market precedent — every competitor requires $49–$
 
 ## How the Business Works
 
-BrandForge is an agent-run business — a one-person company (OPC) where the agent IS the service provider. It runs a full branding consultancy autonomously: serves design agents with extraction, serves founders with brand creation, collects payment per call, scales without limits.
+BrandCanvas is an agent-run business — a one-person company (OPC) where the agent IS the service provider. It runs a full branding consultancy autonomously: serves design agents with extraction, serves founders with brand creation, collects payment per call, scales without limits.
 
 **Analogies:**
 - A branding agency that works in 10 seconds, charges $0.05–0.30/call instead of $5K/project
@@ -126,7 +126,7 @@ BrandForge is an agent-run business — a one-person company (OPC) where the age
 | **Claude Sonnet 4.6 on Bedrock** | Palette generation, font pairing, brand guidelines, optional LLM enhancement pass on extraction | AWS Bedrock — existing profile | `my-bedrock-profile`, `us-east-1` |
 | **Color theory algorithms** | Complementary, analogous, triadic palette math | $0 — math | ZERO — in your code |
 
-**Key advantage:** The extraction pipeline is **pre-validated** — Samuel built brandpull, a production Playwright CLI with color extraction, font detection, logo scoring, and component extraction already working. BrandForge wraps this core as x402-gated Hono endpoints + adds 3 generation endpoints via Bedrock. Not greenfield. Not a spike risk.
+**Key advantage:** The extraction pipeline is **pre-validated** — Samuel built brandpull, a production Playwright CLI with color extraction, font detection, logo scoring, and component extraction already working. BrandCanvas wraps this core as x402-gated Hono endpoints + adds 3 generation endpoints via Bedrock. Not greenfield. Not a spike risk.
 
 ## Stack
 
@@ -275,13 +275,13 @@ OKX exact rejection criteria:
 
 ## Why Art Creation (Category Fit)
 
-| What others will build | What BrandForge does |
+| What others will build | What BrandCanvas does |
 |----------------------|---------------------|
 | Image generation wrappers (DALL-E, Midjourney API) | Brand SYSTEM creation — colors, fonts, guidelines |
 | "Generate a logo" tools | Design INTELLIGENCE — extract + create brand identities |
 | Generic creative assistants | Structured creative output that agents can USE directly |
 
-BrandForge is Art Creation because it CREATES brand identities — color systems, typography systems, design guidelines. It's a creative design service, not a dev tool. The extraction side is the INPUT; the creation side is the OUTPUT. Together = a complete branding service.
+BrandCanvas is Art Creation because it CREATES brand identities — color systems, typography systems, design guidelines. It's a creative design service, not a dev tool. The extraction side is the INPUT; the creation side is the OUTPUT. Together = a complete branding service.
 
 **Not image generation.** That's what everyone else will submit. This is DESIGN SYSTEMS creation — more sophisticated, more useful, more innovative.
 
@@ -314,7 +314,7 @@ BrandForge is Art Creation because it CREATES brand identities — color systems
 ## Demo Script (90 seconds)
 
 ```
-[0-10s] "I built BrandForge — brand intelligence for the agent economy"
+[0-10s] "I built BrandCanvas — brand intelligence for the agent economy"
 [10-30s] Show /brand/extract: paste "stripe.com" → complete brand kit JSON: colors (#635BFF, #0A2540...), fonts (Inter, system-ui), spacing
 [30-45s] Show /brand/colors: paste "linear.app" → color system extracted: primary, accent, neutrals
 [45-60s] Show /palette/generate: "bold, fintech, trustworthy, dark mode" → original 5-color palette generated
@@ -337,20 +337,20 @@ BrandForge is Art Creation because it CREATES brand identities — color systems
 **Primary targets:** Artistic Excellence ($2,500 × 3) + Social Buzz ($1,000 × 10)
 **Upside:** Creative Genius ($20,000) — "real browser rendering → structured brand contract for agents" is a genuinely novel framing
 
-### Why BrandForge wins Artistic Excellence
+### Why BrandCanvas wins Artistic Excellence
 Submit extraction output for a real crypto/web3 brand: full hex palette, font stack, logo SVG, tone descriptors, DTCG token JSON. Judges see immediately this is more useful than the NFT art generators dominating the category. No other submission will have live browser rendering as the core mechanic.
 
-### Why BrandForge wins Social Buzz
+### Why BrandCanvas wins Social Buzz
 90-second X demo. Show: (1) paste a URL, (2) Playwright rendering live, (3) structured JSON out, (4) that JSON fed into another agent writing on-brand copy. Agent-chaining demo is uniquely shareable and is exactly the A2A story OKX wants to tell.
 
 ### Revenue Rocket seeding strategy
 - Price at $0.05–$0.1 for initial calls to drive volume
 - Ask 10 builder friends to each make 5–10 test calls (50+ sales, 5.0 rating = Revenue Rocket entry)
-- Target other hackathon builders: if their agents need brand data, BrandForge is the only option on the platform
+- Target other hackathon builders: if their agents need brand data, BrandCanvas is the only option on the platform
 - Being cited/used by OTHER agents creates passive recurring revenue
 
 ### The cautionary tale
-`Web3 Brand Workflow` on OKX.AI has 0 sales at negotiable pricing. Failure mode: vague positioning + human-freelancer model + no autonomous execution. BrandForge avoids all three.
+`Web3 Brand Workflow` on OKX.AI has 0 sales at negotiable pricing. Failure mode: vague positioning + human-freelancer model + no autonomous execution. BrandCanvas avoids all three.
 
 - **Artistic Excellence** ($2,500 × 3) — top-performing in Art Creation category
 - **Creative Genius** ($10K) — most innovative concept on the marketplace
@@ -394,7 +394,7 @@ Log in to Agentic Wallet with email
 Same wallet as Glowfy — one wallet, two ASPs.
 
 ### Phase 2 — Build + deploy
-Build BrandForge (7 endpoints, x402-gated), deploy to Render with Docker (required for Playwright), custom domain, HTTPS live.
+Build BrandCanvas (7 endpoints, x402-gated), deploy to Render with Docker (required for Playwright), custom domain, HTTPS live.
 
 ### Phase 3 — Register ASP
 ```
@@ -415,7 +415,7 @@ Help me register an A2MCP ASP on OKX.AI using Onchain OS
 ## Branding & Launch Tasks
 
 ### Identity
-- [ ] **Name** — ✅ BrandForge
+- [ ] **Name** — ✅ BrandCanvas
 - [ ] **Tagline** — ✅ *"Extract any brand. Create new ones."*
 - [ ] **Logo** — square, 1:1, no text, no AI-gen, no faces. Minimal — forge/anvil shape or abstract brand mark. Must pass OKX image checklist.
 - [ ] **Color palette** — suggest: deep indigo `#2D1B69` + white + gold accent. Design/creative energy, premium.
