@@ -210,14 +210,14 @@ app.get("/", (c) =>
 				"/brand/assets",
 			],
 			generation: ["/palette/generate", "/fonts/pair", "/brand/guidelines"],
-			assets: ["/assets/:tokenId.svg", "/assets/:tokenId.json"],
+			assets: ["/assets/:tokenId/image", "/assets/:tokenId/metadata"],
 		},
 	}),
 );
 
 // Public asset endpoints — serve NFT art and metadata (not payment-gated)
-app.get("/assets/:tokenId.svg", handleAssetSVG);
-app.get("/assets/:tokenId.json", handleAssetMetadata);
+app.get("/assets/:tokenId/image", handleAssetSVG);
+app.get("/assets/:tokenId/metadata", handleAssetMetadata);
 
 export default {
 	port: Number(process.env.PORT ?? 3000),

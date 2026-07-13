@@ -101,8 +101,8 @@ export async function mintBrandKitNFT(
 			txHash,
 			chain: "X Layer (eip155:196)",
 			explorerUrl: `https://www.okx.com/explorer/xlayer/tx/${txHash}`,
-			svgUrl: `https://brandcanvas.onrender.com/assets/${tokenId}.svg`,
-			metadataUrl: `https://brandcanvas.onrender.com/assets/${tokenId}.json`,
+			svgUrl: `https://brandcanvas.onrender.com/assets/${tokenId}/image`,
+			metadataUrl: `https://brandcanvas.onrender.com/assets/${tokenId}/metadata`,
 		};
 	} catch (error) {
 		console.error(
