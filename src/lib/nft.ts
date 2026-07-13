@@ -38,6 +38,8 @@ export interface MintResult {
 	txHash: string;
 	chain: string;
 	explorerUrl: string;
+	svgUrl: string;
+	metadataUrl: string;
 }
 
 /**
@@ -99,6 +101,8 @@ export async function mintBrandKitNFT(
 			txHash,
 			chain: "X Layer (eip155:196)",
 			explorerUrl: `https://www.okx.com/explorer/xlayer/tx/${txHash}`,
+			svgUrl: `https://brandcanvas.onrender.com/assets/${tokenId}.svg`,
+			metadataUrl: `https://brandcanvas.onrender.com/assets/${tokenId}.json`,
 		};
 	} catch (error) {
 		console.error(

@@ -15,6 +15,7 @@ import { handleBrandGuidelines } from "./routes/brand-guidelines";
 import { handleBrandTypography } from "./routes/brand-typography";
 import { handleFontsPair } from "./routes/fonts-pair";
 import { handlePaletteGenerate } from "./routes/palette-generate";
+import { handleAssetMetadata, handleAssetSVG } from "./routes/assets";
 
 const app = new Hono();
 
@@ -192,8 +193,30 @@ app.on(["GET", "POST"], "/brand/guidelines", handleBrandGuidelines);
 
 // Health check — not payment-gated
 app.get("/", (c) =>
-	c.json({ status: "ok", agent: "BrandCanvas", version: "1.0.0" }),
+	c.json({
+		status: "ok",
+		agent: "BrandCanvas",
+		version: "2.0.0",
+		description:
+			"Brand intelligence and on-chain IP for the agentic economy. Extract any brand. Create and own new ones.",
+		contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+		chain: "X Layer (eip155:196)",
+		endpoints: {
+			extraction: [
+				"/brand/extract",
+				"/brand/colors",
+				"/brand/typography",
+				"/brand/assets",
+			],
+			generation: ["/palette/generate", "/fonts/pair", "/brand/guidelines"],
+			assets: ["/assets/:tokenId.svg", "/assets/:tokenId.json"],
+		},
+	}),
 );
+
+// Public asset endpoints — serve NFT art and metadata (not payment-gated)
+app.get("/assets/:tokenId.svg", handleAssetSVG);
+app.get("/assets/:tokenId.json", handleAssetMetadata);
 
 export default {
 	port: Number(process.env.PORT ?? 3000),
