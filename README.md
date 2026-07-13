@@ -2,9 +2,7 @@
 
 > Create brand identities. Own them on-chain.
 
-Brand design assets with on-chain ownership. Extract from any live URL or generate new ones — every creation mints an NFT directly to your wallet on X Layer. You get the brand kit AND verifiable IP provenance in one call.
-
-One agent. Two entry points. You walk away owning it.
+Verifiable generative design assets with on-chain provenance. Extract brand kits from any live URL or generate new ones — every creation mints a provenance hash on X Layer and delivers an ERC-721 NFT directly to your wallet. Pay per call, get the design assets and IP ownership in one response.
 
 ```
 URL → headless browser render → brand kit extracted

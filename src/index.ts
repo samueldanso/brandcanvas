@@ -199,7 +199,7 @@ app.get("/", (c) =>
 		version: "2.0.0",
 		tagline: "Create brand identities. Own them on-chain.",
 		description:
-			"Brand design assets with on-chain ownership. Extract from any URL or generate new ones — every creation mints an NFT directly to your wallet on X Layer.",
+			"Verifiable generative design assets with on-chain provenance. Extract brand kits from any URL or generate new ones — every creation mints a provenance hash on X Layer. Pay per call.",
 		contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
 		chain: "X Layer (eip155:196)",
 		endpoints: {
