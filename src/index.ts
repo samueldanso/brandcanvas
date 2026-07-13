@@ -199,7 +199,7 @@ app.get("/", (c) =>
 		version: "2.0.0",
 		tagline: "Create brand identities. Own them on-chain.",
 		description:
-			"Verifiable generative design assets with on-chain provenance. Extract brand kits from any URL or generate new ones — every creation mints a provenance hash on X Layer. Pay per call.",
+			"Verifiable generative brand assets with on-chain provenance. When a user or agent needs brand identity for a new project — extract an existing brand kit (colors, fonts, logos, spacing, components) from any live URL (stripe.com, linear.app, any site) with headless browser rendering, or generate a new one from scratch. Every generated asset mints a provenance hash on X Layer and delivers an ERC-721 NFT directly to the payer's wallet. Pay per call, own what you create.",
 		contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
 		chain: "X Layer (eip155:196)",
 		endpoints: {
