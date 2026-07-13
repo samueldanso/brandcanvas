@@ -1,5 +1,6 @@
 import type { Context } from "hono";
 import { invokeClaude } from "../lib/bedrock";
+import { extractPayerAddress, mintBrandKitNFT } from "../lib/nft";
 
 export async function handleFontsPair(c: Context) {
 	const body =
@@ -38,5 +39,15 @@ Return this exact JSON shape:
 	const json = response.match(/\{[\s\S]*\}/)?.[0];
 	if (!json) return c.json({ error: "Failed to generate font pairings" }, 500);
 
-	return c.json(JSON.parse(json));
+	const output = JSON.parse(json);
+
+	// Mint IP NFT to the payer's wallet on X Layer
+	const payerAddress = extractPayerAddress(
+		c.req.header("PAYMENT-SIGNATURE") || null,
+	);
+	const nft = payerAddress
+		? await mintBrandKitNFT(output, "fonts", payerAddress)
+		: null;
+
+	return c.json({ ...output, nft });
 }

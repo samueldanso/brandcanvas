@@ -9,3 +9,7 @@ dist/
 reference/
 references/
 spike-playwright/
+contracts/lib/
+contracts/out/
+contracts/cache/
+contracts/broadcast/

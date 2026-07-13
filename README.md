@@ -1,44 +1,72 @@
 # BrandCanvas
 
-> Extract any brand. Create new ones.
+> Extract any brand. Create and own new ones.
 
-Agent-native brand intelligence — an A2MCP agent delivering pay-per-call brand extraction and creation via x402 on X Layer.
+Brand intelligence and IP provenance for agents. Extract real brand tokens from any live URL using headless browser rendering. Generate original brand identities and mint a provenance hash directly onto X Layer to prove authorship — instant, immutable, verifiable.
 
-## Endpoints
+## Services
 
-| Endpoint | Purpose | Price |
-|----------|---------|-------|
-| `/brand/extract` | URL → complete brand kit JSON (colors, fonts, logo, components) | $0.30 |
-| `/brand/colors` | URL → color system (primary, secondary, accent, neutrals) | $0.05 |
-| `/brand/typography` | URL → font families, weights, scale, stacks | $0.05 |
-| `/brand/assets` | URL → logo URLs, favicon, OG images | $0.05 |
-| `/palette/generate` | Mood + industry → 5-color palette + contrast ratios | $0.05 |
-| `/fonts/pair` | Style + mood → 3 font pairings + Google Fonts CDN links | $0.05 |
-| `/brand/guidelines` | Brand name + values → formatted brand guidelines | $0.10 |
+### Brand Intelligence (Extraction)
 
-## Stack
+| Endpoint | What you get | Price |
+|---|---|---|
+| `POST /brand/extract` | Complete brand kit — colors, fonts, logo SVG, spacing, components, personality. Full headless Chromium render + AI refinement pass. | $0.50 |
+| `POST /brand/colors` | Color system — primary, secondary, accent, neutrals, background, text. Hex values from computed CSS. | $0.10 |
+| `POST /brand/typography` | Font families, weights, size scale, heading/body/paragraph stacks. | $0.10 |
+| `POST /brand/assets` | Logo URL (SVG/PNG), favicon, OG image, Twitter card. Direct links from the live page. | $0.10 |
 
-- **Runtime:** Bun + Hono
-- **Payment:** x402 protocol via `@okxweb3/x402-hono`
-- **Extraction:** Playwright (headless Chromium)
-- **AI:** Claude Sonnet 4.6 on AWS Bedrock
-- **Settlement:** X Layer (`eip155:196`), USDT0
+Powered by headless Chromium rendering the actual page. Returns what the browser computes — not what an LLM guesses from raw HTML.
+
+### Brand Creation + IP Provenance (Generation)
+
+| Endpoint | What you get | Price |
+|---|---|---|
+| `POST /palette/generate` | 5-color palette with hex, roles, usage guidance, WCAG contrast ratios. Provenance hash minted on X Layer. | $0.10 |
+| `POST /fonts/pair` | 3 font pairings with Google Fonts CDN links, CSS snippets, rationale. Provenance hash minted on X Layer. | $0.10 |
+| `POST /brand/guidelines` | Full brand guidelines — mission, voice, tone, color rules, typography rules. Provenance hash minted on X Layer. | $0.15 |
+
+Every generated asset is hashed and minted on X Layer at the moment of creation. The on-chain record ties the content hash to the creator wallet and block timestamp — establishing authorship that any agent can independently verify.
+
+```json
+{
+  "provenance": {
+    "contentHash": "0xabc...",
+    "txHash": "0x123...",
+    "creator": "0x37fafa3e36aa5c0d6ef35627fd66d5991a6fd4d1",
+    "chain": "X Layer (eip155:196)",
+    "explorerUrl": "https://www.okx.com/explorer/xlayer/tx/0x123..."
+  }
+}
+```
 
 ## How It Works
 
-**Extraction** — Playwright renders any live URL, executes CSS, and extracts computed styles (colors, fonts, spacing, logos). LLMs cannot do this — they can't render pages.
+**Extract** — Playwright launches headless Chromium, navigates to the target URL, waits for render, and evaluates the DOM. Colors are extracted from computed `getComputedStyle()` values, not parsed from source. Fonts from resolved font stacks. Logos scored by header position, alt text, and href context. An optional Claude pass refines color roles, cleans font names, and classifies buttons.
 
-**Creation** — Claude generates original color palettes, font pairings, and brand guidelines from a description. Structured JSON output agents can consume directly.
+**Create + Mint** — Claude generates structured brand assets from your parameters. The output JSON is hashed (`keccak256`), and the hash is written to a registry contract on X Layer in the same call. You receive the brand asset and the on-chain proof together.
 
-## Usage
+## Stack
 
-All endpoints are x402-gated. Agents pay per call in USDT0 on X Layer.
+| Layer | Tech |
+|---|---|
+| Runtime | Bun + Hono |
+| Payment | x402 protocol — `@okxweb3/x402-hono`, USDT0 on X Layer |
+| Extraction | Playwright (headless Chromium) + Claude Sonnet 4.6 (Bedrock) |
+| Generation | Claude Sonnet 4.6 on AWS Bedrock |
+| IP Provenance | BrandKitRegistry contract on X Layer |
+| Deploy | Docker on Render |
+
+## Quick Start
 
 ```bash
-# Returns 402 Payment Required (pay via x402 to access)
-curl -X POST https://brandcanvas.onrender.com/brand/extract \
+# Probe any endpoint — returns 402 with payment requirements
+curl -i https://brandcanvas.onrender.com/brand/extract
+
+# After x402 payment:
+curl -X POST https://brandcanvas.onrender.com/palette/generate \
   -H "Content-Type: application/json" \
-  -d '{"url": "https://stripe.com"}'
+  -H "PAYMENT-SIGNATURE: <signed_payload>" \
+  -d '{"mood": "bold", "industry": "fintech"}'
 ```
 
 ## Development
@@ -48,7 +76,3 @@ bun install
 bunx playwright install chromium
 bun run dev
 ```
-
-## License
-
-MIT

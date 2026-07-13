@@ -89,11 +89,11 @@ const routes: RoutesConfig = {
 			scheme: "exact",
 			network: "eip155:196",
 			payTo: WALLET,
-			price: "$0.30",
+			price: "$0.50",
 		},
 		resource: `${BASE_URL}/brand/extract`,
 		description:
-			"URL → complete brand kit JSON (colors, fonts, logo, components)",
+			"URL → complete brand kit. Headless Chromium renders the page, extracts colors, fonts, logo, spacing, components. AI-enhanced.",
 		mimeType: "application/json",
 	},
 	"/brand/colors": {
@@ -101,11 +101,11 @@ const routes: RoutesConfig = {
 			scheme: "exact",
 			network: "eip155:196",
 			payTo: WALLET,
-			price: "$0.05",
+			price: "$0.10",
 		},
 		resource: `${BASE_URL}/brand/colors`,
 		description:
-			"URL → color system (primary, secondary, accent, neutrals + HEX)",
+			"URL → color system extracted from computed CSS. Primary, secondary, accent, neutrals as hex.",
 		mimeType: "application/json",
 	},
 	"/brand/typography": {
@@ -113,10 +113,11 @@ const routes: RoutesConfig = {
 			scheme: "exact",
 			network: "eip155:196",
 			payTo: WALLET,
-			price: "$0.05",
+			price: "$0.10",
 		},
 		resource: `${BASE_URL}/brand/typography`,
-		description: "URL → font families, weights, scale, stacks",
+		description:
+			"URL → font families, weights, size scale, heading/body stacks from computed styles.",
 		mimeType: "application/json",
 	},
 	"/brand/assets": {
@@ -124,10 +125,11 @@ const routes: RoutesConfig = {
 			scheme: "exact",
 			network: "eip155:196",
 			payTo: WALLET,
-			price: "$0.05",
+			price: "$0.10",
 		},
 		resource: `${BASE_URL}/brand/assets`,
-		description: "URL → logo URLs (SVG/PNG), favicon, OG images",
+		description:
+			"URL → logo URL (SVG/PNG), favicon, OG image. Scored and ranked from the live page.",
 		mimeType: "application/json",
 	},
 	"/palette/generate": {
@@ -135,10 +137,11 @@ const routes: RoutesConfig = {
 			scheme: "exact",
 			network: "eip155:196",
 			payTo: WALLET,
-			price: "$0.05",
+			price: "$0.10",
 		},
 		resource: `${BASE_URL}/palette/generate`,
-		description: "Mood + industry → 5-color palette with contrast ratios",
+		description:
+			"Mood + industry → 5-color palette + WCAG contrast. Mints IP NFT to payer on X Layer.",
 		mimeType: "application/json",
 	},
 	"/fonts/pair": {
@@ -146,10 +149,11 @@ const routes: RoutesConfig = {
 			scheme: "exact",
 			network: "eip155:196",
 			payTo: WALLET,
-			price: "$0.05",
+			price: "$0.10",
 		},
 		resource: `${BASE_URL}/fonts/pair`,
-		description: "Style + mood → 3 font pairings with Google Fonts CDN links",
+		description:
+			"Style + mood → 3 font pairings + Google Fonts CDN. Mints IP NFT to payer on X Layer.",
 		mimeType: "application/json",
 	},
 	"/brand/guidelines": {
@@ -157,10 +161,11 @@ const routes: RoutesConfig = {
 			scheme: "exact",
 			network: "eip155:196",
 			payTo: WALLET,
-			price: "$0.10",
+			price: "$0.15",
 		},
 		resource: `${BASE_URL}/brand/guidelines`,
-		description: "Brand name + values → formatted brand guidelines document",
+		description:
+			"Brand name + values → structured brand guidelines. Mints IP NFT to payer on X Layer.",
 		mimeType: "application/json",
 	},
 };
