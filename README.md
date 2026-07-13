@@ -1,77 +1,91 @@
 # BrandCanvas
 
-> Extract any brand. Create and own new ones.
+> Create brand identities. Own them on-chain.
 
-On-chain brand identity and IP for the agentic economy. When a new project or agent spawns, it needs immediate, cohesive brand assets — extract an existing brand kit from any live URL with headless browser rendering, or create a new brand identity and mint it directly onto X Layer as verifiable IP.
+Brand design assets with on-chain ownership. Extract from any live URL or generate new ones — every creation mints an NFT directly to your wallet on X Layer. You get the brand kit AND verifiable IP provenance in one call.
 
-Agent pays → AI generates a brand identity → ERC-721 NFT mints directly to the payer's wallet on X Layer → they own that brand asset as on-chain IP.
+One agent. Two entry points. You walk away owning it.
 
-## Services
+```
+URL → headless browser render → brand kit extracted
+                                        ↓
+Parameters → AI generation → brand identity created
+                                        ↓
+                              content hashed (keccak256)
+                                        ↓
+                              programmatic SVG art composed
+                                        ↓
+                              ERC-721 minted to payer on X Layer
+                                        ↓
+                              provenance established: owner, hash, timestamp
+```
 
-### Brand Extraction
+## Endpoints
 
-| Endpoint | What you get | Price |
+### Extract — Pull any existing brand with browser precision
+
+| Endpoint | Output | Price |
 |---|---|---|
-| `POST /brand/extract` | Complete brand kit — colors, fonts, logo SVG, spacing, components, personality. Full headless Chromium render + AI refinement pass. | $0.50 |
-| `POST /brand/colors` | Color system — primary, secondary, accent, neutrals, background, text. Hex values from computed CSS. | $0.10 |
-| `POST /brand/typography` | Font families, weights, size scale, heading/body/paragraph stacks. | $0.10 |
-| `POST /brand/assets` | Logo URL (SVG/PNG), favicon, OG image, Twitter card. Direct links from the live page. | $0.10 |
+| `POST /brand/extract` | Complete brand kit — colors, fonts, logo SVG, spacing, components, design tokens. Headless Chromium + AI pass. | $0.50 |
+| `POST /brand/colors` | Color system as hex — primary, secondary, accent, neutrals, text. From computed CSS. | $0.10 |
+| `POST /brand/typography` | Font families, weights, size scale, heading/body stacks. From resolved styles. | $0.10 |
+| `POST /brand/assets` | Logo URL (SVG/PNG), favicon, OG image. Scored and ranked. | $0.10 |
 
-Headless Chromium renders the actual page. Returns what the browser computes — not what an LLM guesses from raw HTML. Includes ready-to-use CSS design tokens.
+### Create + Own — Generate new brand assets, mint as on-chain IP
 
-### Brand Creation + On-Chain IP (Generation → NFT Mint)
-
-| Endpoint | What you get | Price |
+| Endpoint | Output | Price |
 |---|---|---|
-| `POST /palette/generate` | 5-color palette with hex, roles, WCAG contrast. **ERC-721 NFT minted to your wallet on X Layer.** | $0.10 |
-| `POST /fonts/pair` | 3 font pairings + Google Fonts CDN links + CSS. **ERC-721 NFT minted to your wallet on X Layer.** | $0.10 |
-| `POST /brand/guidelines` | Structured brand guidelines — mission, voice, tone, color rules, typography. **ERC-721 NFT minted to your wallet on X Layer.** | $0.15 |
+| `POST /palette/generate` | 5-color system + CSS vars + Tailwind config + WCAG contrast + SVG art + **ERC-721 NFT** | $0.10 |
+| `POST /fonts/pair` | 3 font pairings + CDN links + type scale + HTML imports + SVG specimen + **ERC-721 NFT** | $0.10 |
+| `POST /brand/guidelines` | Brand guidelines + voice + color system + typography + usage rules + SVG card + **ERC-721 NFT** | $0.15 |
 
-Every generated brand asset is hashed and minted as an ERC-721 NFT directly to the payer's wallet. The token stores the content hash, kit type, and creation timestamp on-chain — establishing IP authorship that any agent can independently verify.
+Every generation call mints an ERC-721 to the payer's wallet. The NFT carries:
+- Programmatic SVG art (unique per output, fully on-chain)
+- Content hash proving what was generated
+- Creator wallet address
+- Block timestamp establishing provenance
 
 ```json
 {
   "nft": {
     "tokenId": 1,
-    "contract": "0x5D74842220B4a68D0012C59A871bD47285C6a0cb",
+    "contract": "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
     "owner": "0xfed31f8307cb1a7d6c8bb60f9331f60c7c4a402c",
-    "contentHash": "0xabc...",
-    "txHash": "0x123...",
-    "chain": "X Layer (eip155:196)",
-    "explorerUrl": "https://www.okx.com/explorer/xlayer/tx/0x123..."
+    "contentHash": "0x5daa...",
+    "txHash": "0xc340...",
+    "svgUrl": "https://brandcanvas.onrender.com/assets/1.svg",
+    "explorerUrl": "https://www.okx.com/explorer/xlayer/tx/0xc340..."
   }
 }
 ```
 
-## How It Works
+### Public Asset Endpoints (no payment required)
 
-**Extract** — Playwright launches headless Chromium, navigates to the target URL, waits for render, and evaluates the DOM. Colors are extracted from computed `getComputedStyle()` values, not parsed from source. Fonts from resolved font stacks. Logos scored by header position, alt text, and href context. An optional Claude pass refines color roles, cleans font names, and classifies buttons.
+| Endpoint | Returns |
+|---|---|
+| `GET /assets/{tokenId}.svg` | The generative SVG art for any minted token |
+| `GET /assets/{tokenId}.json` | Full token metadata + owner + contract |
 
-**Create + Mint** — Claude generates structured brand assets from your parameters. The output JSON is hashed (`keccak256`) and an ERC-721 NFT is minted directly to the payer's wallet on X Layer in the same call. You receive the brand asset JSON and a real NFT proving you own it.
+## Why this is different
+
+Other Art Creation agents generate images from prompts. BrandCanvas is a **complete brand asset pipeline**:
+
+1. **Real browser rendering** — Playwright executes CSS and returns actual computed values. LLMs reading HTML cannot do this.
+2. **Structured, actionable output** — Not a PNG. CSS custom properties, Tailwind configs, Google Fonts imports. Ready to ship.
+3. **On-chain IP ownership** — Every generated asset is minted as an ERC-721 with provenance. Not a receipt — a real NFT with generative art you hold in your wallet.
+4. **X Layer native** — Payment settles in USDT0, NFTs mint on X Layer, provenance lives on X Layer. Full lifecycle on one chain.
 
 ## Stack
 
 | Layer | Tech |
 |---|---|
 | Runtime | Bun + Hono |
-| Payment | x402 protocol — `@okxweb3/x402-hono`, USDT0 on X Layer |
-| Extraction | Playwright (headless Chromium) + Claude Sonnet 4.6 (Bedrock) |
+| Payment | x402 protocol — USDT0 on X Layer (`eip155:196`) |
+| Extraction | Playwright headless Chromium + Claude Sonnet 4.6 (Bedrock) |
 | Generation | Claude Sonnet 4.6 on AWS Bedrock |
-| IP Provenance | BrandKitNFT (ERC-721) on X Layer — `0x5D74842220B4a68D0012C59A871bD47285C6a0cb` |
+| Art | Programmatic SVG — deterministic compositions from brand parameters |
+| IP | BrandKitNFT (ERC-721) — `0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B` |
 | Deploy | Docker on Render |
-
-## Quick Start
-
-```bash
-# Probe any endpoint — returns 402 with payment requirements
-curl -i https://brandcanvas.onrender.com/brand/extract
-
-# After x402 payment:
-curl -X POST https://brandcanvas.onrender.com/palette/generate \
-  -H "Content-Type: application/json" \
-  -H "PAYMENT-SIGNATURE: <signed_payload>" \
-  -d '{"mood": "bold", "industry": "fintech"}'
-```
 
 ## Development
 
