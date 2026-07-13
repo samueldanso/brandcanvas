@@ -3,15 +3,20 @@ import {
 	InvokeModelCommand,
 } from "@aws-sdk/client-bedrock-runtime";
 import { fromIni } from "@aws-sdk/credential-providers";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
 
 const client = new BedrockRuntimeClient({
 	region: process.env.AWS_REGION || "us-east-1",
 	credentials: process.env.AWS_PROFILE
 		? fromIni({ profile: process.env.AWS_PROFILE })
 		: undefined,
+	requestHandler: new NodeHttpHandler({
+		connectionTimeout: 5000,
+		socketTimeout: 90000,
+	}),
 });
 
-const MODEL_ID = "us.anthropic.claude-sonnet-4-6-v1:0";
+const MODEL_ID = "us.anthropic.claude-sonnet-4-6";
 
 interface ClaudeResponseBody {
 	content: { text: string }[];
