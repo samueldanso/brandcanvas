@@ -24,11 +24,11 @@ const xlayer = defineChain({
 });
 
 const NFT_ABI = parseAbi([
-	"function mint(address to, bytes32 contentHash, string calldata kitType) external returns (uint256)",
+	"function mint(address to, bytes32 contentHash, string calldata kitType, string calldata imageUri) external returns (uint256)",
 ]);
 
 const NFT_CONTRACT =
-	"0x5D74842220B4a68D0012C59A871bD47285C6a0cb" as `0x${string}`;
+	"0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B" as `0x${string}`;
 
 export interface MintResult {
 	tokenId: number;
@@ -48,6 +48,7 @@ export async function mintBrandKitNFT(
 	output: object,
 	kitType: string,
 	payerAddress: string,
+	imageUri: string,
 ): Promise<MintResult | null> {
 	const privateKey = process.env.DEPLOYER_PRIVATE_KEY as `0x${string}`;
 
@@ -69,7 +70,7 @@ export async function mintBrandKitNFT(
 			address: NFT_CONTRACT,
 			abi: NFT_ABI,
 			functionName: "mint",
-			args: [payerAddress as `0x${string}`, contentHash, kitType],
+			args: [payerAddress as `0x${string}`, contentHash, kitType, imageUri],
 		});
 
 		// Parse tokenId from tx receipt logs (Transfer event topic[3])

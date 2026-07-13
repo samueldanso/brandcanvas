@@ -7,8 +7,9 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 /// @title BrandKitNFT
-/// @notice ERC-721 representing AI-generated brand assets with on-chain provenance.
+/// @notice ERC-721 representing AI-generated brand assets with on-chain IP provenance.
 /// @dev Minted by the BrandCanvas backend to the x402 payer's address.
+///      Each token stores its generative SVG art fully on-chain.
 contract BrandKitNFT is ERC721, Ownable {
     using Strings for uint256;
     using Strings for address;
@@ -29,6 +30,7 @@ contract BrandKitNFT is ERC721, Ownable {
     struct BrandKit {
         bytes32 contentHash;
         string kitType;
+        string imageUri;
         uint256 timestamp;
     }
 
@@ -46,8 +48,12 @@ contract BrandKitNFT is ERC721, Ownable {
 
     // ─── Modifiers ─────────────────────────────────────────────────────
     modifier onlyMinter() {
-        if (msg.sender != minter) revert NotMinter();
+        _checkMinter();
         _;
+    }
+
+    function _checkMinter() internal view {
+        if (msg.sender != minter) revert NotMinter();
     }
 
     // ─── External ──────────────────────────────────────────────────────
@@ -56,17 +62,20 @@ contract BrandKitNFT is ERC721, Ownable {
     /// @param to Address of the x402 payer who owns this brand kit.
     /// @param contentHash keccak256 hash of the generated brand kit JSON.
     /// @param kitType Type of brand kit: "palette", "fonts", "guidelines".
+    /// @param imageUri SVG data URI for the generative art (fully on-chain).
     /// @return tokenId The minted token ID.
-    function mint(address to, bytes32 contentHash, string calldata kitType)
-        external
-        onlyMinter
-        returns (uint256 tokenId)
-    {
+    function mint(
+        address to,
+        bytes32 contentHash,
+        string calldata kitType,
+        string calldata imageUri
+    ) external onlyMinter returns (uint256 tokenId) {
         tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _kits[tokenId] = BrandKit({
             contentHash: contentHash,
             kitType: kitType,
+            imageUri: imageUri,
             timestamp: block.timestamp
         });
         emit BrandKitMinted(tokenId, to, contentHash, kitType);
@@ -95,7 +104,9 @@ contract BrandKitNFT is ERC721, Ownable {
             tokenId.toString(),
             " - ",
             kit.kitType,
-            '","description":"AI-generated brand asset with on-chain IP provenance. Created by BrandCanvas on X Layer.","attributes":[{"trait_type":"Kit Type","value":"',
+            '","description":"AI-generated brand asset with on-chain IP provenance. Created by BrandCanvas on X Layer.","image":"',
+            kit.imageUri,
+            '","attributes":[{"trait_type":"Kit Type","value":"',
             kit.kitType,
             '"},{"trait_type":"Content Hash","value":"',
             _bytes32ToHex(kit.contentHash),
@@ -125,7 +136,7 @@ contract BrandKitNFT is ERC721, Ownable {
 
     function _bytes32ToHex(bytes32 data) internal pure returns (string memory) {
         bytes memory alphabet = "0123456789abcdef";
-        bytes memory str = new bytes(66); // "0x" + 64 hex chars
+        bytes memory str = new bytes(66);
         str[0] = "0";
         str[1] = "x";
         for (uint256 i = 0; i < 32; i++) {

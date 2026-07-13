@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { invokeClaude } from "../lib/bedrock";
 import { extractPayerAddress, mintBrandKitNFT } from "../lib/nft";
+import { generateGuidelinesSVG, svgToDataUri } from "../lib/svg";
 
 export async function handleBrandGuidelines(c: Context) {
 	const body =
@@ -54,13 +55,17 @@ Return this exact JSON shape:
 
 	const output = JSON.parse(json);
 
-	// Mint IP NFT to the payer's wallet on X Layer
+	// Generate brand identity card SVG
+	const svg = generateGuidelinesSVG(output);
+	const imageUri = svgToDataUri(svg);
+
+	// Mint IP NFT with embedded SVG to the payer's wallet on X Layer
 	const payerAddress = extractPayerAddress(
 		c.req.header("PAYMENT-SIGNATURE") || null,
 	);
 	const nft = payerAddress
-		? await mintBrandKitNFT(output, "guidelines", payerAddress)
+		? await mintBrandKitNFT(output, "guidelines", payerAddress, imageUri)
 		: null;
 
-	return c.json({ ...output, nft });
+	return c.json({ ...output, svg, nft });
 }
