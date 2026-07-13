@@ -1,7 +1,11 @@
 import { OKXFacilitatorClient } from "@okxweb3/x402-core";
 import type { RoutesConfig } from "@okxweb3/x402-core/server";
 import { ExactEvmScheme } from "@okxweb3/x402-evm/exact/server";
-import { paymentMiddleware, x402ResourceServer } from "@okxweb3/x402-hono";
+import {
+	paymentMiddlewareFromHTTPServer,
+	x402HTTPResourceServer,
+	x402ResourceServer,
+} from "@okxweb3/x402-hono";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { handleBrandAssets } from "./routes/brand-assets";
@@ -38,7 +42,12 @@ function createFacilitator() {
 
 	if (apiKey && secretKey && passphrase) {
 		console.log("[brandcanvas] Using OKXFacilitatorClient (SA keys present)");
-		return new OKXFacilitatorClient({ apiKey, secretKey, passphrase });
+		return new OKXFacilitatorClient({
+			apiKey,
+			secretKey,
+			passphrase,
+			syncSettle: true,
+		});
 	}
 
 	console.warn(
@@ -67,10 +76,12 @@ function createFacilitator() {
 	};
 }
 
-// x402 payment middleware — path-only keys match all HTTP methods (GET + POST)
+// x402 payment middleware
 const WALLET = process.env.WALLET_ADDRESS;
 if (!WALLET)
 	throw new Error("[brandcanvas] WALLET_ADDRESS env var is required");
+
+const BASE_URL = process.env.BASE_URL || "https://brandcanvas.onrender.com";
 
 const routes: RoutesConfig = {
 	"/brand/extract": {
@@ -80,6 +91,10 @@ const routes: RoutesConfig = {
 			payTo: WALLET,
 			price: "$0.30",
 		},
+		resource: `${BASE_URL}/brand/extract`,
+		description:
+			"URL → complete brand kit JSON (colors, fonts, logo, components)",
+		mimeType: "application/json",
 	},
 	"/brand/colors": {
 		accepts: {
@@ -88,6 +103,10 @@ const routes: RoutesConfig = {
 			payTo: WALLET,
 			price: "$0.05",
 		},
+		resource: `${BASE_URL}/brand/colors`,
+		description:
+			"URL → color system (primary, secondary, accent, neutrals + HEX)",
+		mimeType: "application/json",
 	},
 	"/brand/typography": {
 		accepts: {
@@ -96,6 +115,9 @@ const routes: RoutesConfig = {
 			payTo: WALLET,
 			price: "$0.05",
 		},
+		resource: `${BASE_URL}/brand/typography`,
+		description: "URL → font families, weights, scale, stacks",
+		mimeType: "application/json",
 	},
 	"/brand/assets": {
 		accepts: {
@@ -104,6 +126,9 @@ const routes: RoutesConfig = {
 			payTo: WALLET,
 			price: "$0.05",
 		},
+		resource: `${BASE_URL}/brand/assets`,
+		description: "URL → logo URLs (SVG/PNG), favicon, OG images",
+		mimeType: "application/json",
 	},
 	"/palette/generate": {
 		accepts: {
@@ -112,6 +137,9 @@ const routes: RoutesConfig = {
 			payTo: WALLET,
 			price: "$0.05",
 		},
+		resource: `${BASE_URL}/palette/generate`,
+		description: "Mood + industry → 5-color palette with contrast ratios",
+		mimeType: "application/json",
 	},
 	"/fonts/pair": {
 		accepts: {
@@ -120,6 +148,9 @@ const routes: RoutesConfig = {
 			payTo: WALLET,
 			price: "$0.05",
 		},
+		resource: `${BASE_URL}/fonts/pair`,
+		description: "Style + mood → 3 font pairings with Google Fonts CDN links",
+		mimeType: "application/json",
 	},
 	"/brand/guidelines": {
 		accepts: {
@@ -128,6 +159,9 @@ const routes: RoutesConfig = {
 			payTo: WALLET,
 			price: "$0.10",
 		},
+		resource: `${BASE_URL}/brand/guidelines`,
+		description: "Brand name + values → formatted brand guidelines document",
+		mimeType: "application/json",
 	},
 };
 
@@ -135,7 +169,12 @@ const resourceServer = new x402ResourceServer(createFacilitator()).register(
 	"eip155:196",
 	new ExactEvmScheme(),
 );
-app.use("/*", paymentMiddleware(routes, resourceServer));
+
+// Extended poll deadline for Playwright extraction (can take 10-15s)
+const httpServer = new x402HTTPResourceServer(resourceServer, routes);
+httpServer.setPollDeadline(30000); // 30s — Playwright browser launch + page load + extraction
+
+app.use("/*", paymentMiddlewareFromHTTPServer(httpServer));
 
 // Route handlers — each handles GET + POST
 app.on(["GET", "POST"], "/brand/extract", handleBrandExtract);
