@@ -2,13 +2,13 @@
 
 > Extract any brand. Create and own new ones.
 
-Brand intelligence and on-chain IP for the agentic economy. When a new project or agent spawns, it needs immediate, cohesive brand assets — extract an existing brand kit from any live URL with headless browser rendering, or create a new brand identity and mint a provenance hash directly onto X Layer to prove authorship.
+On-chain brand identity and IP for the agentic economy. When a new project or agent spawns, it needs immediate, cohesive brand assets — extract an existing brand kit from any live URL with headless browser rendering, or create a new brand identity and mint it directly onto X Layer as verifiable IP.
 
-Agent pays → AI generates a brand identity → ERC-721 NFT mints directly to the payer's wallet on X Layer → they own that brand asset as a verifiable on-chain IP.
+Agent pays → AI generates a brand identity → ERC-721 NFT mints directly to the payer's wallet on X Layer → they own that brand asset as on-chain IP.
 
 ## Services
 
-### Brand Intelligence (Extraction)
+### Brand Extraction
 
 | Endpoint | What you get | Price |
 |---|---|---|
@@ -17,7 +17,7 @@ Agent pays → AI generates a brand identity → ERC-721 NFT mints directly to t
 | `POST /brand/typography` | Font families, weights, size scale, heading/body/paragraph stacks. | $0.10 |
 | `POST /brand/assets` | Logo URL (SVG/PNG), favicon, OG image, Twitter card. Direct links from the live page. | $0.10 |
 
-Powered by headless Chromium rendering the actual page. Returns what the browser computes — not what an LLM guesses from raw HTML.
+Headless Chromium renders the actual page. Returns what the browser computes — not what an LLM guesses from raw HTML. Includes ready-to-use CSS design tokens.
 
 ### Brand Creation + On-Chain IP (Generation → NFT Mint)
 

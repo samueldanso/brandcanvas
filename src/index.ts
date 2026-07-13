@@ -197,8 +197,9 @@ app.get("/", (c) =>
 		status: "ok",
 		agent: "BrandCanvas",
 		version: "2.0.0",
+		tagline: "Extract any brand. Create and own new ones.",
 		description:
-			"Brand intelligence and on-chain IP for the agentic economy. Extract any brand. Create and own new ones.",
+			"On-chain brand identity and IP for the agentic economy. Extract brand kits from any live URL or generate new brand assets minted as ERC-721 NFTs on X Layer.",
 		contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
 		chain: "X Layer (eip155:196)",
 		endpoints: {
