@@ -75,23 +75,11 @@ export async function mintBrandKitNFT(
 			args: [payerAddress as `0x${string}`, contentHash, kitType, imageUri],
 		});
 
-		// Parse tokenId from tx receipt logs (Transfer event topic[3])
-		const { createPublicClient } = await import("viem");
-		const publicClient = createPublicClient({
-			chain: xlayer,
-			transport: http("https://rpc.xlayer.tech"),
-		});
-		const receipt = await publicClient.waitForTransactionReceipt({
-			hash: txHash,
-		});
-		const transferLog = receipt.logs.find(
-			(log) =>
-				log.topics[0] ===
-				"0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
-		);
-		const tokenId = transferLog?.topics[3]
-			? Number(BigInt(transferLog.topics[3]))
-			: 0;
+		// Fire-and-forget: do NOT wait for receipt — waitForTransactionReceipt
+		// adds 5-10s block confirmation time which causes the onchainos CLI HTTP
+		// client to timeout. NFT still mints on-chain; tokenId resolved from txHash.
+		// tokenId is not known until confirmed — return 0 as placeholder.
+		const tokenId = 0;
 
 		return {
 			tokenId,
