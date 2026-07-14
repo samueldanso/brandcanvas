@@ -32,7 +32,7 @@ export async function invokeClaude(
 		accept: "application/json",
 		body: JSON.stringify({
 			anthropic_version: "bedrock-2023-05-31",
-			max_tokens: 4096,
+			max_tokens: 1024,
 			system: systemPrompt,
 			messages: [
 				{ role: "user", content: [{ type: "text", text: userPrompt }] },
