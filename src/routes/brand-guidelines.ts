@@ -79,7 +79,7 @@ Return this exact JSON:
   ]
 }`;
 
-	const response = await invokeClaude(systemPrompt, userPrompt);
+	const response = await invokeClaude(systemPrompt, userPrompt, 2048);
 	const json = response.match(/\{[\s\S]*\}/)?.[0];
 	if (!json)
 		return c.json({ error: "Failed to generate brand guidelines" }, 500);
@@ -90,13 +90,26 @@ Return this exact JSON:
 	const svg = generateGuidelinesSVG(output);
 	const imageUri = svgToDataUri(svg);
 
-	// Mint IP NFT with embedded SVG to the payer's wallet
+	// Fire-and-forget NFT mint — do NOT await, return immediately
 	const payerAddress = extractPayerAddress(
 		c.req.header("PAYMENT-SIGNATURE") || null,
 	);
-	const nft = payerAddress
-		? await mintBrandKitNFT(output, "guidelines", payerAddress, imageUri)
-		: null;
+	let nftMeta: { tokenId: number; contract: string; chain: string; svgUrl: string; metadataUrl: string } | null = null;
+	if (payerAddress) {
+		mintBrandKitNFT(output, "guidelines", payerAddress, imageUri)
+			.then((result) => {
+				if (result) console.log(`[nft] guidelines minted token #${result.tokenId} tx=${result.txHash}`);
+			})
+			.catch((err) => console.error("[nft] guidelines mint error:", err));
+		// Return placeholder so response includes NFT contract info immediately
+		nftMeta = {
+			tokenId: -1,
+			contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+			chain: "X Layer (eip155:196)",
+			svgUrl: "minting...",
+			metadataUrl: "minting...",
+		};
+	}
 
-	return c.json({ ...output, svg, nft });
+	return c.json({ ...output, svg, nft: nftMeta });
 }

@@ -62,7 +62,7 @@ Return this exact JSON:
   }
 }`;
 
-	const response = await invokeClaude(systemPrompt, userPrompt);
+	const response = await invokeClaude(systemPrompt, userPrompt, 1024);
 	const json = response.match(/\{[\s\S]*\}/)?.[0];
 	if (!json) return c.json({ error: "Failed to generate font pairings" }, 500);
 
@@ -72,13 +72,15 @@ Return this exact JSON:
 	const svg = generateFontsSVG(output.pairings || []);
 	const imageUri = svgToDataUri(svg);
 
-	// Mint IP NFT with embedded SVG to the payer's wallet
+	// Fire-and-forget NFT mint
 	const payerAddress = extractPayerAddress(
 		c.req.header("PAYMENT-SIGNATURE") || null,
 	);
-	const nft = payerAddress
-		? await mintBrandKitNFT(output, "fonts", payerAddress, imageUri)
-		: null;
+	if (payerAddress) {
+		mintBrandKitNFT(output, "fonts", payerAddress, imageUri)
+			.then((r) => { if (r) console.log(`[nft] fonts minted #${r.tokenId}`); })
+			.catch((e) => console.error("[nft] fonts mint error:", e));
+	}
 
-	return c.json({ ...output, svg, nft });
+	return c.json({ ...output, svg, nft: { contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B", chain: "X Layer (eip155:196)", status: "minting" } });
 }

@@ -25,6 +25,7 @@ interface ClaudeResponseBody {
 export async function invokeClaude(
 	systemPrompt: string,
 	userPrompt: string,
+	maxTokens = 1024,
 ): Promise<string> {
 	const command = new InvokeModelCommand({
 		modelId: MODEL_ID,
@@ -32,7 +33,7 @@ export async function invokeClaude(
 		accept: "application/json",
 		body: JSON.stringify({
 			anthropic_version: "bedrock-2023-05-31",
-			max_tokens: 1024,
+			max_tokens: maxTokens,
 			system: systemPrompt,
 			messages: [
 				{ role: "user", content: [{ type: "text", text: userPrompt }] },
