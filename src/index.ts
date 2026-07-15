@@ -192,16 +192,7 @@ app.on(["GET", "POST"], "/fonts/pair", handleFontsPair);
 app.on(["GET", "POST"], "/brand/guidelines", handleBrandGuidelines);
 
 // Health check — not payment-gated
-app.get("/health", async (c) => {
-	try {
-		const { invokeClaude } = await import("./lib/bedrock");
-		const r = await invokeClaude("Reply with OK.", "Say OK", 10, true);
-		return c.json({ status: "ok", bedrock: "ok", response: r.substring(0, 20) });
-	} catch (e: unknown) {
-		const msg = e instanceof Error ? e.message : "Unknown";
-		return c.json({ status: "ok", bedrock: "error", detail: msg });
-	}
-});
+app.get("/health", (c) => c.json({ status: "ok" }));
 app.get("/", (c) =>
 	c.json({
 		status: "ok",
