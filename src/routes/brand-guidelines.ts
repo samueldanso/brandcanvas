@@ -79,7 +79,7 @@ Return this exact JSON:
   ]
 }`;
 
-	const response = await invokeClaude(systemPrompt, userPrompt, 2048);
+	const response = await invokeClaude(systemPrompt, userPrompt, 1500, true);
 	const json = response.match(/\{[\s\S]*\}/)?.[0];
 	if (!json)
 		return c.json({ error: "Failed to generate brand guidelines" }, 500);
@@ -94,11 +94,20 @@ Return this exact JSON:
 	const payerAddress = extractPayerAddress(
 		c.req.header("PAYMENT-SIGNATURE") || null,
 	);
-	let nftMeta: { tokenId: number; contract: string; chain: string; svgUrl: string; metadataUrl: string } | null = null;
+	let nftMeta: {
+		tokenId: number;
+		contract: string;
+		chain: string;
+		svgUrl: string;
+		metadataUrl: string;
+	} | null = null;
 	if (payerAddress) {
 		mintBrandKitNFT(output, "guidelines", payerAddress, imageUri)
 			.then((result) => {
-				if (result) console.log(`[nft] guidelines minted token #${result.tokenId} tx=${result.txHash}`);
+				if (result)
+					console.log(
+						`[nft] guidelines minted token #${result.tokenId} tx=${result.txHash}`,
+					);
 			})
 			.catch((err) => console.error("[nft] guidelines mint error:", err));
 		// Return placeholder so response includes NFT contract info immediately

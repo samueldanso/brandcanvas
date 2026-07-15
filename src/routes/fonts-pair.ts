@@ -62,7 +62,7 @@ Return this exact JSON:
   }
 }`;
 
-	const response = await invokeClaude(systemPrompt, userPrompt, 1024);
+	const response = await invokeClaude(systemPrompt, userPrompt, 1024, true);
 	const json = response.match(/\{[\s\S]*\}/)?.[0];
 	if (!json) return c.json({ error: "Failed to generate font pairings" }, 500);
 
@@ -78,9 +78,18 @@ Return this exact JSON:
 	);
 	if (payerAddress) {
 		mintBrandKitNFT(output, "fonts", payerAddress, imageUri)
-			.then((r) => { if (r) console.log(`[nft] fonts minted #${r.tokenId}`); })
+			.then((r) => {
+				if (r) console.log(`[nft] fonts minted #${r.tokenId}`);
+			})
 			.catch((e) => console.error("[nft] fonts mint error:", e));
 	}
 
-	return c.json({ ...output, nft: { contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B", chain: "X Layer (eip155:196)", status: "minting" } });
+	return c.json({
+		...output,
+		nft: {
+			contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+			chain: "X Layer (eip155:196)",
+			status: "minting",
+		},
+	});
 }

@@ -59,7 +59,7 @@ Return this exact JSON:
   "avoid": "What NOT to do with these colors"
 }`;
 
-	const response = await invokeClaude(systemPrompt, userPrompt, 1024);
+	const response = await invokeClaude(systemPrompt, userPrompt, 1024, true);
 	const json = response.match(/\{[\s\S]*\}/)?.[0];
 	if (!json) return c.json({ error: "Failed to generate palette" }, 500);
 
@@ -75,9 +75,18 @@ Return this exact JSON:
 	);
 	if (payerAddress) {
 		mintBrandKitNFT(output, "palette", payerAddress, imageUri)
-			.then((r) => { if (r) console.log(`[nft] palette minted #${r.tokenId}`); })
+			.then((r) => {
+				if (r) console.log(`[nft] palette minted #${r.tokenId}`);
+			})
 			.catch((e) => console.error("[nft] palette mint error:", e));
 	}
 
-	return c.json({ ...output, nft: { contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B", chain: "X Layer (eip155:196)", status: "minting" } });
+	return c.json({
+		...output,
+		nft: {
+			contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+			chain: "X Layer (eip155:196)",
+			status: "minting",
+		},
+	});
 }

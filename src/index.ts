@@ -192,6 +192,7 @@ app.on(["GET", "POST"], "/fonts/pair", handleFontsPair);
 app.on(["GET", "POST"], "/brand/guidelines", handleBrandGuidelines);
 
 // Health check — not payment-gated
+app.get("/health", (c) => c.json({ status: "ok" }));
 app.get("/", (c) =>
 	c.json({
 		status: "ok",
