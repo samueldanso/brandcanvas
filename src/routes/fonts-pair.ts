@@ -63,12 +63,18 @@ Return this exact JSON:
 }`;
 
 	try {
-		const response = await invokeClaude(systemPrompt, userPrompt, 1024, true);
+		const response = await invokeClaude(systemPrompt, userPrompt, 2048, true);
 		const json = response.match(/\{[\s\S]*\}/)?.[0];
 		if (!json)
 			return c.json({ error: "Failed to generate font pairings" }, 500);
 
-		const output = JSON.parse(json);
+		let output: Record<string, unknown>;
+		try {
+			output = JSON.parse(json);
+		} catch {
+			const repaired = json.replace(/,\s*([}\]])/g, "$1").replace(/([}\]])(\s*")/g, "$1,$2");
+			output = JSON.parse(repaired);
+		}
 
 		const svg = generateFontsSVG(output.pairings || []);
 		const imageUri = svgToDataUri(svg);

@@ -59,11 +59,24 @@ Return this exact JSON:
   "avoid": "What NOT to do with these colors"
 }`;
 
-	const response = await invokeClaude(systemPrompt, userPrompt, 1024, true);
+	let response: string;
+	try {
+		response = await invokeClaude(systemPrompt, userPrompt, 2048, true);
+	} catch (e: unknown) {
+		const msg = e instanceof Error ? e.message : "Unknown error";
+		console.error("[palette-generate] Bedrock error:", msg);
+		return c.json({ error: "AI generation failed", detail: msg }, 500);
+	}
 	const json = response.match(/\{[\s\S]*\}/)?.[0];
 	if (!json) return c.json({ error: "Failed to generate palette" }, 500);
 
-	const output = JSON.parse(json);
+	let output: Record<string, unknown>;
+	try {
+		output = JSON.parse(json);
+	} catch {
+		const repaired = json.replace(/,\s*([}\]])/g, "$1").replace(/([}\]])(\s*")/g, "$1,$2");
+		output = JSON.parse(repaired);
+	}
 
 	// Generate programmatic SVG art from the palette
 	const svg = generatePaletteSVG(output.palette || []);

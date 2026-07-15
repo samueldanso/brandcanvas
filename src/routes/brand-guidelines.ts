@@ -79,12 +79,25 @@ Return this exact JSON:
   ]
 }`;
 
-	const response = await invokeClaude(systemPrompt, userPrompt, 1500, true);
+	let response: string;
+	try {
+		response = await invokeClaude(systemPrompt, userPrompt, 2500, true);
+	} catch (e: unknown) {
+		const msg = e instanceof Error ? e.message : "Unknown error";
+		console.error("[brand-guidelines] Bedrock error:", msg);
+		return c.json({ error: "AI generation failed", detail: msg }, 500);
+	}
 	const json = response.match(/\{[\s\S]*\}/)?.[0];
 	if (!json)
 		return c.json({ error: "Failed to generate brand guidelines" }, 500);
 
-	const output = JSON.parse(json);
+	let output: Record<string, unknown>;
+	try {
+		output = JSON.parse(json);
+	} catch {
+		const repaired = json.replace(/,\s*([}\]])/g, "$1").replace(/([}\]])(\s*")/g, "$1,$2");
+		output = JSON.parse(repaired);
+	}
 
 	// Generate brand identity card SVG
 	const svg = generateGuidelinesSVG(output);
