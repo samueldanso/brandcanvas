@@ -94,7 +94,7 @@ const routes: RoutesConfig = {
 		},
 		resource: `${BASE_URL}/brand/extract`,
 		description:
-			"URL → complete brand kit. Headless Chromium renders the page, extracts colors, fonts, logo, spacing, components. AI-enhanced.",
+			'Complete brand kit extracted from any live URL via headless Chromium — colors, fonts, logo, spacing, components, and CSS design tokens. Send: {"url": "https://example.com"} (required).',
 		mimeType: "application/json",
 	},
 	"/brand/colors": {
@@ -106,7 +106,7 @@ const routes: RoutesConfig = {
 		},
 		resource: `${BASE_URL}/brand/colors`,
 		description:
-			"URL → color system extracted from computed CSS. Primary, secondary, accent, neutrals as hex.",
+			'Extracts the color system from any website — primary, secondary, accent, neutral, background, and text colors as hex values from computed CSS. Send: {"url": "https://example.com"} (required).',
 		mimeType: "application/json",
 	},
 	"/brand/typography": {
@@ -118,7 +118,7 @@ const routes: RoutesConfig = {
 		},
 		resource: `${BASE_URL}/brand/typography`,
 		description:
-			"URL → font families, weights, size scale, heading/body stacks from computed styles.",
+			'Extracts typography from any website — font families, weights, size scale, heading/body/paragraph stacks from computed styles. Send: {"url": "https://example.com"} (required).',
 		mimeType: "application/json",
 	},
 	"/brand/assets": {
@@ -130,7 +130,7 @@ const routes: RoutesConfig = {
 		},
 		resource: `${BASE_URL}/brand/assets`,
 		description:
-			"URL → logo URL (SVG/PNG), favicon, OG image. Scored and ranked from the live page.",
+			'Extracts brand assets from any website — logo (SVG/PNG), favicon, OG image, scored and ranked. Send: {"url": "https://example.com"} (required).',
 		mimeType: "application/json",
 	},
 	"/palette/generate": {
@@ -142,7 +142,7 @@ const routes: RoutesConfig = {
 		},
 		resource: `${BASE_URL}/palette/generate`,
 		description:
-			"Mood + industry → 5-color palette + WCAG contrast. Mints IP NFT to payer on X Layer.",
+			'Generates a 5-color brand palette with WCAG contrast ratios, CSS variables, and Tailwind config. Mints an NFT to your wallet. Send: {"mood": "bold and energetic"} (required). Optional: industry, adjectives (array), darkMode (boolean).',
 		mimeType: "application/json",
 	},
 	"/fonts/pair": {
@@ -154,7 +154,7 @@ const routes: RoutesConfig = {
 		},
 		resource: `${BASE_URL}/fonts/pair`,
 		description:
-			"Style + mood → 3 font pairings + Google Fonts CDN. Mints IP NFT to payer on X Layer.",
+			'Generates 3 curated font pairings from Google Fonts with CSS snippets, type scale, and HTML imports. Mints an NFT to your wallet. Send: {"style": "modern"} or {"mood": "playful"} — at least one required. Optional: useCase.',
 		mimeType: "application/json",
 	},
 	"/brand/guidelines": {
@@ -166,7 +166,7 @@ const routes: RoutesConfig = {
 		},
 		resource: `${BASE_URL}/brand/guidelines`,
 		description:
-			"Brand name + values → structured brand guidelines. Mints IP NFT to payer on X Layer.",
+			'Generates structured brand guidelines — mission, positioning, voice and tone, color system, typography, usage rules. Mints an NFT to your wallet. Send: {"brandName": "Acme"} (required). Optional: values (array), audience, industry, colorPreferences.',
 		mimeType: "application/json",
 	},
 };
