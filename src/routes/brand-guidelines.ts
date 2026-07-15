@@ -111,5 +111,5 @@ Return this exact JSON:
 		};
 	}
 
-	return c.json({ ...output, svg, nft: nftMeta });
+	return c.json({ ...output, nft: nftMeta });
 }

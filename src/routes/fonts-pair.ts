@@ -82,5 +82,5 @@ Return this exact JSON:
 			.catch((e) => console.error("[nft] fonts mint error:", e));
 	}
 
-	return c.json({ ...output, svg, nft: { contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B", chain: "X Layer (eip155:196)", status: "minting" } });
+	return c.json({ ...output, nft: { contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B", chain: "X Layer (eip155:196)", status: "minting" } });
 }
