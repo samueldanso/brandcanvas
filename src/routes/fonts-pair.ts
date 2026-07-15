@@ -62,34 +62,39 @@ Return this exact JSON:
   }
 }`;
 
-	const response = await invokeClaude(systemPrompt, userPrompt, 1024, true);
-	const json = response.match(/\{[\s\S]*\}/)?.[0];
-	if (!json) return c.json({ error: "Failed to generate font pairings" }, 500);
+	try {
+		const response = await invokeClaude(systemPrompt, userPrompt, 1024, true);
+		const json = response.match(/\{[\s\S]*\}/)?.[0];
+		if (!json)
+			return c.json({ error: "Failed to generate font pairings" }, 500);
 
-	const output = JSON.parse(json);
+		const output = JSON.parse(json);
 
-	// Generate typography specimen SVG
-	const svg = generateFontsSVG(output.pairings || []);
-	const imageUri = svgToDataUri(svg);
+		const svg = generateFontsSVG(output.pairings || []);
+		const imageUri = svgToDataUri(svg);
 
-	// Fire-and-forget NFT mint
-	const payerAddress = extractPayerAddress(
-		c.req.header("PAYMENT-SIGNATURE") || null,
-	);
-	if (payerAddress) {
-		mintBrandKitNFT(output, "fonts", payerAddress, imageUri)
-			.then((r) => {
-				if (r) console.log(`[nft] fonts minted #${r.tokenId}`);
-			})
-			.catch((e) => console.error("[nft] fonts mint error:", e));
+		const payerAddress = extractPayerAddress(
+			c.req.header("PAYMENT-SIGNATURE") || null,
+		);
+		if (payerAddress) {
+			mintBrandKitNFT(output, "fonts", payerAddress, imageUri)
+				.then((r) => {
+					if (r) console.log(`[nft] fonts minted #${r.tokenId}`);
+				})
+				.catch((e) => console.error("[nft] fonts mint error:", e));
+		}
+
+		return c.json({
+			...output,
+			nft: {
+				contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+				chain: "X Layer (eip155:196)",
+				status: "minting",
+			},
+		});
+	} catch (e: unknown) {
+		const msg = e instanceof Error ? e.message : "Unknown error";
+		console.error("[fonts-pair] Bedrock error:", msg);
+		return c.json({ error: "AI generation failed", detail: msg }, 500);
 	}
-
-	return c.json({
-		...output,
-		nft: {
-			contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
-			chain: "X Layer (eip155:196)",
-			status: "minting",
-		},
-	});
 }
