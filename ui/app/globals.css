@@ -31,7 +31,7 @@ body {
   color: var(--ink);
   background:
     linear-gradient(rgba(253, 252, 249, 0.18), rgba(253, 252, 249, 0) 40%),
-    url("/hero.jpg") center 68% / cover no-repeat,
+    url("/hero1.png") center 68% / cover no-repeat,
     var(--paper);
 }
 
