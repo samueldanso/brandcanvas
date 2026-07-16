@@ -95,8 +95,13 @@ Return this exact JSON:
 	try {
 		output = JSON.parse(json);
 	} catch {
-		const repaired = json.replace(/,\s*([}\]])/g, "$1").replace(/([}\]])(\s*")/g, "$1,$2");
-		output = JSON.parse(repaired);
+		try {
+			const repaired = json.replace(/,\s*([}\]])/g, "$1").replace(/([}\]])(\s*")/g, "$1,$2");
+			output = JSON.parse(repaired);
+		} catch {
+			console.error("[brand-guidelines] JSON repair failed, raw:", json.slice(0, 500));
+			return c.json({ error: "Failed to parse brand guidelines output" }, 500);
+		}
 	}
 
 	// Generate brand identity card SVG
