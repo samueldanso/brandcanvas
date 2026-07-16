@@ -81,7 +81,7 @@ Return this exact JSON:
 
 	let response: string;
 	try {
-		response = await invokeClaude(systemPrompt, userPrompt, 2500, true);
+		response = await invokeClaude(systemPrompt, userPrompt, 4096, true);
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : "Unknown error";
 		console.error("[brand-guidelines] Bedrock error:", msg);
