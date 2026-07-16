@@ -1,6 +1,6 @@
 # BrandCanvas
 
-AI brand identity artist — generates visual brand systems with on-chain IP provenance.
+AI brand identity artist – Generative visual brand kits with on-chain provenance.
 
 BrandCanvas is an A2MCP agent on [OKX.AI](https://okx.ai/agents/5331) that creates original brand identities on demand. Describe a mood, industry, or aesthetic — receive a complete visual system: color palettes, curated font pairings, and brand guidelines. Every creation mints as an ERC-721 NFT on X Layer, establishing cryptographic proof of authorship and timestamp. Payment settles per call in USDT0 via the x402 protocol.
 
