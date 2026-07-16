@@ -4,7 +4,7 @@ Instructions for AI coding agents working on this repository.
 
 ## Project
 
-**BrandCanvas** — an A2MCP agent on [OKX.AI](https://okx.ai/agents/5331) that extracts brand assets from live websites using headless browser rendering, or generates new brand identities from scratch. Every generated asset mints a provenance hash on X Layer as an ERC-721 NFT. Payment settles per call in USDT via the x402 protocol on X Lyer.
+**BrandCanvas** — AI brand identity artist on [OKX.AI](https://okx.ai/agents/5331). Generates original brand systems (color palettes, typography specimens, brand guidelines) and mints each creation as an ERC-721 NFT on X Layer with on-chain IP provenance. Can also study any live brand's visual identity for creative reference. Payment settles per call in USDT0 via the x402 protocol.
 
 ## Commands
 
@@ -24,15 +24,15 @@ Entry point: `src/index.ts` (Hono app, Bun default export).
 
 ### Endpoints (all x402-gated, handle GET + POST)
 
-| Route               | Handler                          | Price |
-| ------------------- | -------------------------------- | ----- |
-| `/brand/extract`    | `src/routes/brand-extract.ts`    | $0.50 |
-| `/brand/colors`     | `src/routes/brand-colors.ts`     | $0.10 |
-| `/brand/typography` | `src/routes/brand-typography.ts` | $0.10 |
-| `/brand/assets`     | `src/routes/brand-assets.ts`     | $0.10 |
-| `/palette/generate` | `src/routes/palette-generate.ts` | $0.10 |
-| `/fonts/pair`       | `src/routes/fonts-pair.ts`       | $0.10 |
-| `/brand/guidelines` | `src/routes/brand-guidelines.ts` | $0.15 |
+| Route               | Handler                          | Price | Type |
+| ------------------- | -------------------------------- | ----- | ---- |
+| `/palette/generate` | `src/routes/palette-generate.ts` | $0.10 | Generate + NFT |
+| `/fonts/pair`       | `src/routes/fonts-pair.ts`       | $0.10 | Generate + NFT |
+| `/brand/guidelines` | `src/routes/brand-guidelines.ts` | $0.15 | Generate + NFT |
+| `/brand/extract`    | `src/routes/brand-extract.ts`    | $0.50 | Brand Study |
+| `/brand/colors`     | `src/routes/brand-colors.ts`     | $0.10 | Brand Study |
+| `/brand/typography` | `src/routes/brand-typography.ts` | $0.10 | Brand Study |
+| `/brand/assets`     | `src/routes/brand-assets.ts`     | $0.10 | Brand Study |
 
 ### Public endpoints (no payment)
 
@@ -49,8 +49,8 @@ Entry point: `src/index.ts` (Hono app, Bun default export).
 | ------------------------------- | ---------------------------------------------- |
 | `src/lib/bedrock.ts`            | AWS Bedrock client (Claude Sonnet 4.6)         |
 | `src/lib/nft.ts`                | ERC-721 minting on X Layer                     |
-| `src/lib/svg.ts`                | Programmatic SVG art generation                |
-| `src/branding/index.ts`         | Playwright extraction orchestrator             |
+| `src/lib/svg.ts`                | Generative SVG artwork for NFT minting         |
+| `src/branding/index.ts`         | Live brand study (Playwright extraction)       |
 | `src/branding/page-script.ts`   | In-page DOM evaluation script                  |
 | `src/branding/processor.ts`     | Raw data → structured brand profile            |
 | `src/branding/colors.ts`        | Color utilities (hexify, isVibrant, isGrayish) |
@@ -62,7 +62,7 @@ Entry point: `src/index.ts` (Hono app, Bun default export).
 - **Runtime:** Bun + Hono
 - **Payment:** `@okxweb3/x402-hono` + `@okxweb3/x402-evm` + `@okxweb3/x402-core`
 - **AI:** Claude Sonnet 4.6 on AWS Bedrock
-- **Extraction:** Playwright (headless Chromium)
+- **Brand Study:** Playwright (headless Chromium)
 - **NFT:** ERC-721 on X Layer — `0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B`
 - **Deploy:** Docker on Render
 
@@ -84,5 +84,5 @@ PORT=3000
 - Payment gate fires before param validation — never return 400 before 402.
 - CORS must explicitly list `PAYMENT-SIGNATURE` header and expose `PAYMENT-REQUIRED` and `PAYMENT-RESPONSE`.
 - The `references/` folder is READ-ONLY context. Never import from it.
-- No LLM-hallucinated brand data. Extraction uses real browser rendering.
+- No LLM-hallucinated brand data. Brand study uses real browser rendering.
 - No stubs in production. Every endpoint returns real output.
