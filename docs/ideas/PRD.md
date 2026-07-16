@@ -2,6 +2,8 @@
 
 ## What
 
+Generative brand kits from any URL with IP provenance — verifiable on-chain.
+
 An A2MCP agent that provides pay-per-call brand intelligence — extract brand identity from any live website or generate brand materials from scratch. URL in → brand kit out. Description in → brand identity created. Payment via x402 micropayments on X Layer.
 
 ## For Who
