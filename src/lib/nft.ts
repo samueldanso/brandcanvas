@@ -1,4 +1,5 @@
 import {
+	createPublicClient,
 	createWalletClient,
 	defineChain,
 	http,
@@ -25,6 +26,7 @@ const xlayer = defineChain({
 
 const NFT_ABI = parseAbi([
 	"function mint(address to, bytes32 contentHash, string calldata kitType, string calldata imageUri) external returns (uint256)",
+	"function totalSupply() external view returns (uint256)",
 ]);
 
 const NFT_CONTRACT =
@@ -38,12 +40,13 @@ export interface MintResult {
 	txHash: string;
 	chain: string;
 	explorerUrl: string;
-	svgUrl: string;
+	imageUrl: string;
 	metadataUrl: string;
 }
 
 /**
  * Mint a BrandCanvas IP NFT to the payer's wallet on X Layer.
+ * Pins SVG to IPFS via Pinata, then mints with IPFS image URI.
  * Non-fatal: returns null if minting is unavailable or fails.
  */
 export async function mintBrandKitNFT(
@@ -51,6 +54,7 @@ export async function mintBrandKitNFT(
 	kitType: string,
 	payerAddress: string,
 	imageUri: string,
+	ipfsImageUrl?: string,
 ): Promise<MintResult | null> {
 	const privateKey = process.env.DEPLOYER_PRIVATE_KEY as `0x${string}`;
 
@@ -62,24 +66,33 @@ export async function mintBrandKitNFT(
 	try {
 		const contentHash = keccak256(toHex(JSON.stringify(output)));
 		const account = privateKeyToAccount(privateKey);
+
+		const publicClient = createPublicClient({
+			chain: xlayer,
+			transport: http("https://rpc.xlayer.tech"),
+		});
+
+		const totalSupply = await publicClient.readContract({
+			address: NFT_CONTRACT,
+			abi: NFT_ABI,
+			functionName: "totalSupply",
+		});
+		const tokenId = Number(totalSupply) + 1;
+
 		const client = createWalletClient({
 			account,
 			chain: xlayer,
 			transport: http("https://rpc.xlayer.tech"),
 		});
 
+		const finalImageUri = ipfsImageUrl || imageUri;
+
 		const txHash = await client.writeContract({
 			address: NFT_CONTRACT,
 			abi: NFT_ABI,
 			functionName: "mint",
-			args: [payerAddress as `0x${string}`, contentHash, kitType, imageUri],
+			args: [payerAddress as `0x${string}`, contentHash, kitType, finalImageUri],
 		});
-
-		// Fire-and-forget: do NOT wait for receipt — waitForTransactionReceipt
-		// adds 5-10s block confirmation time which causes the onchainos CLI HTTP
-		// client to timeout. NFT still mints on-chain; tokenId resolved from txHash.
-		// tokenId is not known until confirmed — return 0 as placeholder.
-		const tokenId = 0;
 
 		return {
 			tokenId,
@@ -89,7 +102,7 @@ export async function mintBrandKitNFT(
 			txHash,
 			chain: "X Layer (eip155:196)",
 			explorerUrl: `https://www.okx.com/explorer/xlayer/tx/${txHash}`,
-			svgUrl: `https://brandcanvas.onrender.com/assets/${tokenId}/image`,
+			imageUrl: ipfsImageUrl || `https://brandcanvas.onrender.com/assets/${tokenId}/image`,
 			metadataUrl: `https://brandcanvas.onrender.com/assets/${tokenId}/metadata`,
 		};
 	} catch (error) {

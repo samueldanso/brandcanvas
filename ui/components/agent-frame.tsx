@@ -21,8 +21,23 @@ const ICONS: Record<string, string> = {
 
 const SERVICES = [
   {
+    id: "palette",
+    label: "Palette Generate",
+    endpoint: "https://brandcanvas.onrender.com/palette/generate",
+  },
+  {
+    id: "fonts",
+    label: "Font Pairing",
+    endpoint: "https://brandcanvas.onrender.com/fonts/pair",
+  },
+  {
+    id: "guidelines",
+    label: "Brand Guidelines",
+    endpoint: "https://brandcanvas.onrender.com/brand/guidelines",
+  },
+  {
     id: "extract",
-    label: "Brand Extract",
+    label: "Brand Study",
     endpoint: "https://brandcanvas.onrender.com/brand/extract",
   },
   {
@@ -39,21 +54,6 @@ const SERVICES = [
     id: "assets",
     label: "Brand Assets",
     endpoint: "https://brandcanvas.onrender.com/brand/assets",
-  },
-  {
-    id: "palette",
-    label: "Palette Generate",
-    endpoint: "https://brandcanvas.onrender.com/palette/generate",
-  },
-  {
-    id: "fonts",
-    label: "Font Pairing",
-    endpoint: "https://brandcanvas.onrender.com/fonts/pair",
-  },
-  {
-    id: "guidelines",
-    label: "Brand Guidelines",
-    endpoint: "https://brandcanvas.onrender.com/brand/guidelines",
   },
 ];
 

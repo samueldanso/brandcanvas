@@ -19,15 +19,15 @@ export default function Home() {
           </div>
 
           <h1>
-            Brand kits from any URL.
+            AI brand identity artist.
             <br />
-            <em>Paid per call.</em>
+            <em>Paid per creation.</em>
           </h1>
 
           <p className="sub">
-            Extract colors, typography, and assets from live sites — or generate
-            palettes, pairings, and guidelines from scratch. Every call settles
-            in USDT on X Layer via the x402 protocol.
+            Generate original color palettes, typography specimens, and brand
+            guidelines — each minted as an NFT with on-chain provenance. Every
+            call settles in USDT on X Layer via the x402 protocol.
           </p>
 
           <AgentFrame />

@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { invokeClaude } from "../lib/bedrock";
 import { extractPayerAddress, mintBrandKitNFT } from "../lib/nft";
+import { pinSVG } from "../lib/pinata";
 import { generateFontsSVG, svgToDataUri } from "../lib/svg";
 
 export async function handleFontsPair(c: Context) {
@@ -79,26 +80,47 @@ Return this exact JSON:
 		const svg = generateFontsSVG(output.pairings || []);
 		const imageUri = svgToDataUri(svg);
 
+		const pinResult = await pinSVG(svg, `fonts-${Date.now()}`);
+		const viewUrl = pinResult?.gatewayUrl || null;
+
 		const payerAddress = extractPayerAddress(
 			c.req.header("PAYMENT-SIGNATURE") || null,
 		);
+
+		let nft: Record<string, string | number> = {
+			contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+			chain: "X Layer (eip155:196)",
+			status: "no_payer_detected",
+		};
+
 		if (payerAddress) {
-			mintBrandKitNFT(output, "fonts", payerAddress, imageUri)
-				.then((r) => {
-					if (r) console.log(`[nft] fonts minted #${r.tokenId}`);
-				})
-				.catch((e) => console.error("[nft] fonts mint error:", e));
+			const mintResult = await Promise.race([
+				mintBrandKitNFT(output, "fonts", payerAddress, imageUri, viewUrl || undefined),
+				new Promise<null>((resolve) => setTimeout(() => resolve(null), 12000)),
+			]);
+
+			if (mintResult) {
+				nft = {
+					tokenId: mintResult.tokenId,
+					contract: mintResult.contract,
+					chain: mintResult.chain,
+					txHash: mintResult.txHash,
+					explorerUrl: mintResult.explorerUrl,
+					imageUrl: mintResult.imageUrl,
+					metadataUrl: mintResult.metadataUrl,
+					owner: mintResult.owner,
+					status: "minted",
+				};
+			} else {
+				nft = {
+					contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+					chain: "X Layer (eip155:196)",
+					status: "mint_timeout_pending",
+				};
+			}
 		}
 
-		return c.json({
-			...output,
-			preview_svg: svg,
-			nft: {
-				contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
-				chain: "X Layer (eip155:196)",
-				status: "minting",
-			},
-		});
+		return c.json({ ...output, viewUrl, nft });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : "Unknown error";
 		console.error("[fonts-pair] Bedrock error:", msg);

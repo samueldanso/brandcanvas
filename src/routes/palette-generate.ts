@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { invokeClaude } from "../lib/bedrock";
 import { extractPayerAddress, mintBrandKitNFT } from "../lib/nft";
+import { pinSVG } from "../lib/pinata";
 import { generatePaletteSVG, svgToDataUri } from "../lib/svg";
 
 export async function handlePaletteGenerate(c: Context) {
@@ -78,29 +79,48 @@ Return this exact JSON:
 		output = JSON.parse(repaired);
 	}
 
-	// Generate programmatic SVG art from the palette
 	const svg = generatePaletteSVG(output.palette || []);
 	const imageUri = svgToDataUri(svg);
 
-	// Fire-and-forget NFT mint
+	const pinResult = await pinSVG(svg, `palette-${Date.now()}`);
+	const viewUrl = pinResult?.gatewayUrl || null;
+
 	const payerAddress = extractPayerAddress(
 		c.req.header("PAYMENT-SIGNATURE") || null,
 	);
+
+	let nft: Record<string, string | number> = {
+		contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+		chain: "X Layer (eip155:196)",
+		status: "no_payer_detected",
+	};
+
 	if (payerAddress) {
-		mintBrandKitNFT(output, "palette", payerAddress, imageUri)
-			.then((r) => {
-				if (r) console.log(`[nft] palette minted #${r.tokenId}`);
-			})
-			.catch((e) => console.error("[nft] palette mint error:", e));
+		const mintResult = await Promise.race([
+			mintBrandKitNFT(output, "palette", payerAddress, imageUri, viewUrl || undefined),
+			new Promise<null>((resolve) => setTimeout(() => resolve(null), 12000)),
+		]);
+
+		if (mintResult) {
+			nft = {
+				tokenId: mintResult.tokenId,
+				contract: mintResult.contract,
+				chain: mintResult.chain,
+				txHash: mintResult.txHash,
+				explorerUrl: mintResult.explorerUrl,
+				imageUrl: mintResult.imageUrl,
+				metadataUrl: mintResult.metadataUrl,
+				owner: mintResult.owner,
+				status: "minted",
+			};
+		} else {
+			nft = {
+				contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+				chain: "X Layer (eip155:196)",
+				status: "mint_timeout_pending",
+			};
+		}
 	}
 
-	return c.json({
-		...output,
-		svg,
-		nft: {
-			contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
-			chain: "X Layer (eip155:196)",
-			status: "minting",
-		},
-	});
+	return c.json({ ...output, viewUrl, nft });
 }

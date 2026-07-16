@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { invokeClaude } from "../lib/bedrock";
 import { extractPayerAddress, mintBrandKitNFT } from "../lib/nft";
+import { pinSVG } from "../lib/pinata";
 import { generateGuidelinesSVG, svgToDataUri } from "../lib/svg";
 
 export async function handleBrandGuidelines(c: Context) {
@@ -104,39 +105,48 @@ Return this exact JSON:
 		}
 	}
 
-	// Generate brand identity card SVG
 	const svg = generateGuidelinesSVG(output);
 	const imageUri = svgToDataUri(svg);
 
-	// Fire-and-forget NFT mint — do NOT await, return immediately
+	const pinResult = await pinSVG(svg, `guidelines-${Date.now()}`);
+	const viewUrl = pinResult?.gatewayUrl || null;
+
 	const payerAddress = extractPayerAddress(
 		c.req.header("PAYMENT-SIGNATURE") || null,
 	);
-	let nftMeta: {
-		tokenId: number;
-		contract: string;
-		chain: string;
-		svgUrl: string;
-		metadataUrl: string;
-	} | null = null;
+
+	let nft: Record<string, string | number> = {
+		contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+		chain: "X Layer (eip155:196)",
+		status: "no_payer_detected",
+	};
+
 	if (payerAddress) {
-		mintBrandKitNFT(output, "guidelines", payerAddress, imageUri)
-			.then((result) => {
-				if (result)
-					console.log(
-						`[nft] guidelines minted token #${result.tokenId} tx=${result.txHash}`,
-					);
-			})
-			.catch((err) => console.error("[nft] guidelines mint error:", err));
-		// Return placeholder so response includes NFT contract info immediately
-		nftMeta = {
-			tokenId: -1,
-			contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
-			chain: "X Layer (eip155:196)",
-			svgUrl: "minting...",
-			metadataUrl: "minting...",
-		};
+		const mintResult = await Promise.race([
+			mintBrandKitNFT(output, "guidelines", payerAddress, imageUri, viewUrl || undefined),
+			new Promise<null>((resolve) => setTimeout(() => resolve(null), 12000)),
+		]);
+
+		if (mintResult) {
+			nft = {
+				tokenId: mintResult.tokenId,
+				contract: mintResult.contract,
+				chain: mintResult.chain,
+				txHash: mintResult.txHash,
+				explorerUrl: mintResult.explorerUrl,
+				imageUrl: mintResult.imageUrl,
+				metadataUrl: mintResult.metadataUrl,
+				owner: mintResult.owner,
+				status: "minted",
+			};
+		} else {
+			nft = {
+				contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
+				chain: "X Layer (eip155:196)",
+				status: "mint_timeout_pending",
+			};
+		}
 	}
 
-	return c.json({ ...output, nft: nftMeta });
+	return c.json({ ...output, viewUrl, nft });
 }
