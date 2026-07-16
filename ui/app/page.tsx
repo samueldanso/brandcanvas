@@ -44,6 +44,22 @@ export default function Home() {
         >
           Available on OKX.AI
         </a>
+        <span>·</span>
+        <a
+          href="https://x.com/brandcanvas_ai"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          X
+        </a>
+        <span>·</span>
+        <a
+          href="https://github.com/samueldanso/brandcanvas"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>
       </footer>
     </div>
   );
