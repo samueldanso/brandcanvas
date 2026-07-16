@@ -1,4 +1,4 @@
-import { EndpointFrame } from "@/components/endpoint-frame";
+import { AgentFrame } from "@/components/agent-frame";
 import Image from "next/image";
 
 export default function Home() {
@@ -19,18 +19,18 @@ export default function Home() {
           </div>
 
           <h1>
-            Create brand identities.
+            Brand kits from any URL.
             <br />
-            <em>Own them on-chain.</em>
+            <em>Paid per call.</em>
           </h1>
 
           <p className="sub">
-            Extract colors, fonts, and assets from any live URL — or generate
-            palettes, pairings, and guidelines from scratch. Every asset mints
-            an NFT to your wallet on X Layer.
+            Extract colors, typography, and assets from live sites — or generate
+            palettes, pairings, and guidelines from scratch. Every call settles
+            in USDT on X Layer via the x402 protocol.
           </p>
 
-          <EndpointFrame />
+          <AgentFrame />
         </section>
       </main>
 
@@ -44,8 +44,6 @@ export default function Home() {
         >
           Available on OKX.AI
         </a>
-        <span>·</span>
-        <span>Brand Identity</span>
       </footer>
     </div>
   );

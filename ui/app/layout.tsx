@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EB_Garamond } from "next/font/google";
+import { Grain } from "@/components/grain";
 import "./globals.css";
 
 const garamond = EB_Garamond({
@@ -42,7 +43,10 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className={garamond.variable}>{children}</body>
+      <body className={garamond.variable}>
+        <Grain />
+        {children}
+      </body>
     </html>
   );
 }
