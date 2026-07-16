@@ -96,6 +96,7 @@ Return this exact JSON:
 
 	return c.json({
 		...output,
+		svg,
 		nft: {
 			contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
 			chain: "X Layer (eip155:196)",

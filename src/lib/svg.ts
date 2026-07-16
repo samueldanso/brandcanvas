@@ -10,73 +10,39 @@ interface PaletteColor {
 }
 
 /**
- * Generate an abstract color-field composition from a 5-color palette.
- * Radial gradient blobs + organic bezier shapes on a dark ground —
- * deterministic from the input colors, looks like a designed art piece.
+ * Generate a polished brand palette card SVG — clear color swatches
+ * with hex values, names, and roles. Looks like a design agency deliverable.
  */
 export function generatePaletteSVG(colors: PaletteColor[]): string {
-	const hexes = colors.map((c) => c.hex);
-	const [c1, c2, c3, c4, c5] = [
-		hexes[0] || "#4A1942",
-		hexes[1] || "#C05780",
-		hexes[2] || "#FF8C42",
-		hexes[3] || "#F4E04D",
-		hexes[4] || "#F8F4E1",
-	];
+	const palette = colors.slice(0, 5).map((c, i) => ({
+		hex: c.hex || ["#4A1942", "#C05780", "#FF8C42", "#F4E04D", "#F8F4E1"][i],
+		name: c.name || `Color ${i + 1}`,
+		role: c.role || ["primary", "secondary", "accent", "neutral", "background"][i],
+	}));
 
-	const seed = hashColors(hexes);
-
-	// Deterministic blob positions distributed across canvas
-	const p0x = 60 + (seed % 120);
-	const p0y = 60 + ((seed * 3) % 120);
-	const p1x = 320 + (seed % 100);
-	const p1y = 40 + ((seed * 7) % 120);
-	const p2x = 120 + ((seed * 5) % 140);
-	const p2y = 290 + ((seed * 2) % 100);
-	const p3x = 370 + (seed % 80);
-	const p3y = 310 + ((seed * 4) % 100);
-	const p4x = 230 + ((seed * 9) % 100);
-	const p4y = 430 + (seed % 50);
-
-	// Blob radii
-	const r0 = 200 + (seed % 80);
-	const r1 = 180 + ((seed * 3) % 80);
-	const r2 = 220 + ((seed * 7) % 60);
-	const r3 = 190 + ((seed * 2) % 90);
-	const r4 = 160 + ((seed * 5) % 80);
-
-	// Bezier path control points for organic accent shapes
-	const bx1 = 80 + (seed % 160);
-	const by1 = 20 + ((seed * 3) % 120);
-	const bx2 = 300 + ((seed * 5) % 140);
-	const by2 = 180 + ((seed * 7) % 140);
-	const bex = 460 + (seed % 40);
-	const bey = 280 + ((seed * 2) % 80);
-
-	const bx3 = 40 + ((seed * 11) % 100);
-	const by3 = 320 + (seed % 80);
-	const bx4 = 240 + ((seed * 4) % 160);
-	const by4 = 460 + ((seed * 3) % 40);
+	const swatches = palette
+		.map((c, i) => {
+			const x = 40 + i * 88;
+			const textColor = isLight(c.hex) ? "#1A1A1A" : "#FFFFFF";
+			return `<rect x="${x}" y="120" width="76" height="180" rx="6" fill="${c.hex}"/>
+  <text x="${x + 38}" y="330" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="9" fill="#AAAAAA" text-anchor="middle" letter-spacing="0.5">${c.hex.toUpperCase()}</text>
+  <text x="${x + 38}" y="348" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="8" fill="#666666" text-anchor="middle" letter-spacing="1.5">${c.role.toUpperCase()}</text>
+  <text x="${x + 38}" y="220" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="8" fill="${textColor}" text-anchor="middle" opacity="0.8" letter-spacing="0.5">${truncate(c.name, 10)}</text>`;
+		})
+		.join("\n  ");
 
 	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
-  <defs>
-    <radialGradient id="rg0" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${c1}" stop-opacity="0.9"/><stop offset="70%" stop-color="${c1}" stop-opacity="0.3"/><stop offset="100%" stop-color="${c1}" stop-opacity="0"/></radialGradient>
-    <radialGradient id="rg1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${c2}" stop-opacity="0.85"/><stop offset="65%" stop-color="${c2}" stop-opacity="0.25"/><stop offset="100%" stop-color="${c2}" stop-opacity="0"/></radialGradient>
-    <radialGradient id="rg2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${c3}" stop-opacity="0.8"/><stop offset="60%" stop-color="${c3}" stop-opacity="0.2"/><stop offset="100%" stop-color="${c3}" stop-opacity="0"/></radialGradient>
-    <radialGradient id="rg3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${c4}" stop-opacity="0.85"/><stop offset="70%" stop-color="${c4}" stop-opacity="0.25"/><stop offset="100%" stop-color="${c4}" stop-opacity="0"/></radialGradient>
-    <radialGradient id="rg4" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${c5}" stop-opacity="0.75"/><stop offset="65%" stop-color="${c5}" stop-opacity="0.2"/><stop offset="100%" stop-color="${c5}" stop-opacity="0"/></radialGradient>
-    <pattern id="grain" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="1" height="1" x="1" y="1" fill="white" opacity="0.035"/><rect width="1" height="1" x="3" y="3" fill="white" opacity="0.025"/></pattern>
-  </defs>
-  <rect width="500" height="500" fill="#080808"/>
-  <ellipse cx="${p0x}" cy="${p0y}" rx="${r0}" ry="${Math.round(r0 * 0.8)}" fill="url(#rg0)"/>
-  <ellipse cx="${p1x}" cy="${p1y}" rx="${r1}" ry="${Math.round(r1 * 0.9)}" fill="url(#rg1)"/>
-  <ellipse cx="${p2x}" cy="${p2y}" rx="${r2}" ry="${Math.round(r2 * 0.85)}" fill="url(#rg2)"/>
-  <ellipse cx="${p3x}" cy="${p3y}" rx="${r3}" ry="${Math.round(r3 * 0.95)}" fill="url(#rg3)"/>
-  <ellipse cx="${p4x}" cy="${p4y}" rx="${r4}" ry="${Math.round(r4 * 0.75)}" fill="url(#rg4)"/>
-  <path d="M 0,${180 + (seed % 60)} C ${bx1},${by1} ${bx2},${by2} ${bex},${bey}" stroke="${c2}" stroke-width="1.5" fill="none" opacity="0.25"/>
-  <path d="M ${30 + (seed % 60)},500 C ${bx3},${by3} ${bx4},${by4} 500,${360 + ((seed * 3) % 80)}" stroke="${c4}" stroke-width="1" fill="none" opacity="0.2"/>
-  <rect width="500" height="500" fill="url(#grain)"/>
-  <text x="484" y="492" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="7" fill="white" opacity="0.18" text-anchor="end" letter-spacing="2.5">BRANDCANVAS</text>
+  <rect width="500" height="500" fill="#0A0A0A"/>
+  <text x="40" y="52" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" fill="#FFFFFF" letter-spacing="3" opacity="0.9">COLOR SYSTEM</text>
+  <line x1="40" y1="68" x2="460" y2="68" stroke="#222222" stroke-width="1"/>
+  <text x="40" y="92" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="9" fill="#555555" letter-spacing="1">${palette.length} COLORS • WCAG ACCESSIBLE</text>
+  ${swatches}
+  <line x1="40" y1="380" x2="460" y2="380" stroke="#1A1A1A" stroke-width="1"/>
+  <rect x="40" y="400" width="420" height="60" rx="4" fill="#111111"/>
+  <text x="60" y="422" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="8" fill="#555555" letter-spacing="1">CSS VARIABLES</text>
+  <text x="60" y="442" font-family="monospace" font-size="8" fill="#888888">--color-primary: ${palette[0].hex}; --color-secondary: ${palette[1].hex};</text>
+  <text x="60" y="454" font-family="monospace" font-size="8" fill="#888888">--color-accent: ${palette[2].hex}; --color-neutral: ${palette[3].hex};</text>
+  <text x="460" y="492" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="7" fill="white" opacity="0.15" text-anchor="end" letter-spacing="2.5">BRANDCANVAS • X LAYER</text>
 </svg>`;
 }
 
@@ -187,6 +153,18 @@ export function generateGuidelinesSVG(guidelines: {
  */
 export function svgToDataUri(svg: string): string {
 	return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+}
+
+function isLight(hex: string): boolean {
+	const c = hex.replace("#", "");
+	const r = Number.parseInt(c.substring(0, 2), 16);
+	const g = Number.parseInt(c.substring(2, 4), 16);
+	const b = Number.parseInt(c.substring(4, 6), 16);
+	return (r * 299 + g * 587 + b * 114) / 1000 > 150;
+}
+
+function truncate(str: string, max: number): string {
+	return str.length > max ? `${str.substring(0, max)}…` : str;
 }
 
 /**
