@@ -82,7 +82,7 @@ Return this exact JSON:
 
 	let response: string;
 	try {
-		response = await invokeClaude(systemPrompt, userPrompt, 4096, true);
+		response = await invokeClaude(systemPrompt, userPrompt, 5000, true);
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : "Unknown error";
 		console.error("[brand-guidelines] Bedrock error:", msg);
@@ -97,7 +97,13 @@ Return this exact JSON:
 		output = JSON.parse(json);
 	} catch {
 		try {
-			const repaired = json.replace(/,\s*([}\]])/g, "$1").replace(/([}\]])(\s*")/g, "$1,$2");
+			let repaired = json.replace(/,\s*([}\]])/g, "$1").replace(/([}\]])(\s*")/g, "$1,$2");
+			const opens = (repaired.match(/{/g) || []).length;
+			const closes = (repaired.match(/}/g) || []).length;
+			if (opens > closes) {
+				repaired = repaired.replace(/,?\s*"[^"]*$/, "");
+				repaired += "}".repeat(opens - closes);
+			}
 			output = JSON.parse(repaired);
 		} catch {
 			console.error("[brand-guidelines] JSON repair failed, raw:", json.slice(0, 500));
