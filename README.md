@@ -1,36 +1,35 @@
 # BrandCanvas
 
-Brand kits from any URL — verifiable on-chain.
+AI brand identity artist — generates visual brand systems with on-chain IP provenance.
 
-BrandCanvas is an A2MCP agent on [OKX.AI](https://okx.ai/agents/5331) that extracts brand assets from live websites using headless browser rendering, or generates new brand identities from scratch. Every generated asset mints a provenance hash on X Layer as an ERC-721 NFT. Payment settles per call in USDT via the x402 protocol on X Lyer.
+BrandCanvas is an A2MCP agent on [OKX.AI](https://okx.ai/agents/5331) that creates original brand identities on demand. Describe a mood, industry, or aesthetic — receive a complete visual system: color palettes, curated font pairings, and brand guidelines. Every creation mints as an ERC-721 NFT on X Layer, establishing cryptographic proof of authorship and timestamp. Payment settles per call in USDT0 via the x402 protocol.
 
 ## Why BrandCanvas
 
-Other agents in the Art Creation category generate images from prompts. BrandCanvas is different:
-
-1. **Real browser rendering** — Playwright executes CSS and returns actual computed values. No LLM hallucination of brand data.
-2. **Structured, actionable output** — CSS custom properties, Tailwind configs, Google Fonts imports. Ready to ship, not a PNG.
-3. **On-chain IP ownership** — Every generated asset mints as an ERC-721 with a content hash proving what was created, when, and by whom.
-4. **X Layer native** — Payment in USDT0, NFTs on X Layer, provenance on X Layer. Full lifecycle on one chain.
+1. **Generative brand art** — Original color palettes, typography specimens, and identity cards created from your creative brief. Not image generation — brand system creation.
+2. **On-chain IP ownership** — Every generated asset mints as an ERC-721 with a content hash proving what was created, when, and by whom.
+3. **Structured creative output** — CSS custom properties, Tailwind configs, Google Fonts imports, WCAG contrast ratios. Art you can ship.
+4. **Live brand study** — Need inspiration? Point at any URL and extract the complete visual language — colors, fonts, spacing, components — as creative reference.
+5. **X Layer native** — Payment in USDT0, NFTs on X Layer, provenance on X Layer. Full lifecycle on one chain.
 
 ## Endpoints
 
-### Extract — pull brand data from any URL
+### Generate — create brand assets + mint NFT
 
 | Endpoint | What it does | Price |
 |---|---|---|
-| `POST /brand/extract` | Complete brand kit — colors, fonts, logo, spacing, components | $0.50 |
-| `POST /brand/colors` | Color system as hex values from computed CSS | $0.10 |
-| `POST /brand/typography` | Font families, weights, size scale from resolved styles | $0.10 |
-| `POST /brand/assets` | Logo (SVG/PNG), favicon, OG image — scored and ranked | $0.10 |
+| `POST /palette/generate` | Mood + industry → 5-color palette with harmony, WCAG contrast, CSS vars, Tailwind config + NFT | $0.10 |
+| `POST /fonts/pair` | Style + mood → 3 curated font pairings with type scale and CDN links + NFT | $0.10 |
+| `POST /brand/guidelines` | Brand values + audience → complete brand guidelines with voice, color system, typography + NFT | $0.15 |
 
-### Generate — create new brand assets + mint NFT
+### Study — extract visual identity from any live brand
 
 | Endpoint | What it does | Price |
 |---|---|---|
-| `POST /palette/generate` | 5-color palette + CSS vars + Tailwind config + WCAG contrast + NFT | $0.10 |
-| `POST /fonts/pair` | 3 font pairings + CDN links + type scale + NFT | $0.10 |
-| `POST /brand/guidelines` | Brand guidelines + voice + color system + typography + NFT | $0.15 |
+| `POST /brand/extract` | Any URL → complete brand kit (colors, fonts, logo, spacing, components) | $0.50 |
+| `POST /brand/colors` | URL → color system as hex values | $0.10 |
+| `POST /brand/typography` | URL → font families, weights, size scale | $0.10 |
+| `POST /brand/assets` | URL → logo (SVG/PNG), favicon, OG image — scored and ranked | $0.10 |
 
 ### Public (no payment)
 
@@ -39,28 +38,34 @@ Other agents in the Art Creation category generate images from prompts. BrandCan
 | `GET /assets/:tokenId/image` | Generative SVG art for any minted token |
 | `GET /assets/:tokenId/metadata` | Full token metadata + owner + contract |
 
+## How it works
+
+```
+Creative brief (mood, industry, values)
+        ↓
+Claude generates brand identity
+        ↓
+Content hashed (keccak256)
+        ↓
+ERC-721 minted to payer on X Layer
+        ↓
+Structured art + NFT delivered
+
+--- or ---
+
+Live URL → browser renders → visual identity extracted → delivered as creative reference
+```
+
 ## Stack
 
 | Layer | Tech |
 |---|---|
 | Runtime | Bun + Hono |
 | Payment | x402 protocol — USDT0 on X Layer (`eip155:196`) |
-| Extraction | Playwright headless Chromium + Claude Sonnet 4.6 (Bedrock) |
 | Generation | Claude Sonnet 4.6 on AWS Bedrock |
+| Extraction | Playwright headless Chromium + Claude Sonnet 4.6 |
 | NFT | BrandKitNFT (ERC-721) — `0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B` |
 | Deploy | Docker on Render |
-
-## How it works
-
-```
-URL → Playwright renders page → computed styles extracted
-                                        ↓
-Parameters → Claude generates → brand identity created
-                                        ↓
-                              content hashed (keccak256)
-                                        ↓
-                              ERC-721 minted to payer on X Layer
-```
 
 ## Quick Start
 
