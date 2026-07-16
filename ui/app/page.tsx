@@ -26,8 +26,8 @@ export default function Home() {
 
           <p className="sub">
             Generate original color palettes, typography specimens, and brand
-            guidelines — each minted as an NFT with on-chain provenance. Every
-            call settles in USDT on X Layer via the x402 protocol.
+            guidelines — permanently hosted on IPFS and minted as NFTs on X
+            Layer. You pay, you own the art. Every call settles in USDT via x402.
           </p>
 
           <AgentFrame />
