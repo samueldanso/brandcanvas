@@ -98,19 +98,13 @@ export function generateFontsSVG(
  * Generate a polished brand identity card SVG from guidelines.
  * Asymmetric layout: primary-color left band, brand name hero, integrated color chips.
  */
-export function generateGuidelinesSVG(guidelines: {
-	brandName: string;
-	colorGuidelines?: {
-		primary?: { hex: string };
-		secondary?: { hex: string };
-		accent?: { hex: string };
-	};
-}): string {
-	const name = guidelines.brandName || "Brand";
+export function generateGuidelinesSVG(guidelines: Record<string, unknown>): string {
+	const name = (guidelines.brandName as string) || "Brand";
 	const initial = name.charAt(0).toUpperCase();
-	const primary = guidelines.colorGuidelines?.primary?.hex || "#4F6BED";
-	const secondary = guidelines.colorGuidelines?.secondary?.hex || "#1A1A2E";
-	const accent = guidelines.colorGuidelines?.accent?.hex || "#00D4AA";
+	const colors = (guidelines.colorSystem || guidelines.colorGuidelines || {}) as Record<string, { hex?: string }>;
+	const primary = colors.primary?.hex || "#4F6BED";
+	const secondary = colors.secondary?.hex || colors.neutralDark?.hex || "#1A1A2E";
+	const accent = colors.accent?.hex || "#00D4AA";
 
 	const displayName = name.length > 16 ? `${name.substring(0, 16)}...` : name;
 	const nameFontSize = name.length > 12 ? 34 : name.length > 8 ? 44 : 54;
