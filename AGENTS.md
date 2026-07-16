@@ -4,7 +4,7 @@ Instructions for AI coding agents working on this repository.
 
 ## Project
 
-**BrandCanvas** — an A2MCP agent on OKX.AI that delivers brand kit intelligence via x402-gated endpoints. Agents call endpoints directly; payment settles per call in USDT0 on X Layer.
+**BrandCanvas** — an A2MCP agent on [OKX.AI](https://okx.ai/agents/5331) that extracts brand assets from live websites using headless browser rendering, or generates new brand identities from scratch. Every generated asset mints a provenance hash on X Layer as an ERC-721 NFT. Payment settles per call in USDT via the x402 protocol on X Lyer.
 
 ## Commands
 
@@ -24,38 +24,38 @@ Entry point: `src/index.ts` (Hono app, Bun default export).
 
 ### Endpoints (all x402-gated, handle GET + POST)
 
-| Route | Handler | Price |
-|---|---|---|
-| `/brand/extract` | `src/routes/brand-extract.ts` | $0.50 |
-| `/brand/colors` | `src/routes/brand-colors.ts` | $0.10 |
+| Route               | Handler                          | Price |
+| ------------------- | -------------------------------- | ----- |
+| `/brand/extract`    | `src/routes/brand-extract.ts`    | $0.50 |
+| `/brand/colors`     | `src/routes/brand-colors.ts`     | $0.10 |
 | `/brand/typography` | `src/routes/brand-typography.ts` | $0.10 |
-| `/brand/assets` | `src/routes/brand-assets.ts` | $0.10 |
+| `/brand/assets`     | `src/routes/brand-assets.ts`     | $0.10 |
 | `/palette/generate` | `src/routes/palette-generate.ts` | $0.10 |
-| `/fonts/pair` | `src/routes/fonts-pair.ts` | $0.10 |
+| `/fonts/pair`       | `src/routes/fonts-pair.ts`       | $0.10 |
 | `/brand/guidelines` | `src/routes/brand-guidelines.ts` | $0.15 |
 
 ### Public endpoints (no payment)
 
-| Route | Handler |
-|---|---|
-| `/assets/:tokenId/image` | `src/routes/assets.ts` |
-| `/assets/:tokenId/metadata` | `src/routes/assets.ts` |
-| `/health` | inline in `src/index.ts` |
-| `/` | inline in `src/index.ts` |
+| Route                       | Handler                  |
+| --------------------------- | ------------------------ |
+| `/assets/:tokenId/image`    | `src/routes/assets.ts`   |
+| `/assets/:tokenId/metadata` | `src/routes/assets.ts`   |
+| `/health`                   | inline in `src/index.ts` |
+| `/`                         | inline in `src/index.ts` |
 
 ### Key modules
 
-| Path | Purpose |
-|---|---|
-| `src/lib/bedrock.ts` | AWS Bedrock client (Claude Sonnet 4.6) |
-| `src/lib/nft.ts` | ERC-721 minting on X Layer |
-| `src/lib/svg.ts` | Programmatic SVG art generation |
-| `src/branding/index.ts` | Playwright extraction orchestrator |
-| `src/branding/page-script.ts` | In-page DOM evaluation script |
-| `src/branding/processor.ts` | Raw data → structured brand profile |
-| `src/branding/colors.ts` | Color utilities (hexify, isVibrant, isGrayish) |
-| `src/branding/logo.ts` | Logo scoring and selection |
-| `contracts/src/BrandKitNFT.sol` | ERC-721 contract (deployed on X Layer) |
+| Path                            | Purpose                                        |
+| ------------------------------- | ---------------------------------------------- |
+| `src/lib/bedrock.ts`            | AWS Bedrock client (Claude Sonnet 4.6)         |
+| `src/lib/nft.ts`                | ERC-721 minting on X Layer                     |
+| `src/lib/svg.ts`                | Programmatic SVG art generation                |
+| `src/branding/index.ts`         | Playwright extraction orchestrator             |
+| `src/branding/page-script.ts`   | In-page DOM evaluation script                  |
+| `src/branding/processor.ts`     | Raw data → structured brand profile            |
+| `src/branding/colors.ts`        | Color utilities (hexify, isVibrant, isGrayish) |
+| `src/branding/logo.ts`          | Logo scoring and selection                     |
+| `contracts/src/BrandKitNFT.sol` | ERC-721 contract (deployed on X Layer)         |
 
 ## Stack
 
