@@ -1,4 +1,4 @@
-import sharp from "sharp";
+import { Resvg } from "@resvg/resvg-js";
 import { PinataSDK } from "pinata";
 
 const pinata = new PinataSDK({
@@ -21,8 +21,9 @@ export async function pinSVG(
 	}
 
 	try {
-		const pngBuffer = await sharp(Buffer.from(svg)).resize(500, 500).png().toBuffer();
-		const file = new File([pngBuffer], `${name}.png`, { type: "image/png" });
+		const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 500 } });
+		const pngBuffer = resvg.render().asPng();
+		const file = new File([new Uint8Array(pngBuffer)], `${name}.png`, { type: "image/png" });
 		const result = await pinata.upload.public.file(file);
 		const gateway = process.env.PINATA_GATEWAY;
 		return {

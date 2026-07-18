@@ -14,6 +14,7 @@
 		"@okxweb3/x402-core": "^0.1.0",
 		"@okxweb3/x402-evm": "^0.2.1",
 		"@okxweb3/x402-hono": "^0.1.1",
+		"@resvg/resvg-js": "^2.6.2",
 		"culori": "^4.0.2",
 		"hono": "^4.12.28",
 		"pinata": "^2.5.6",
