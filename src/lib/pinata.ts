@@ -1,3 +1,4 @@
+import sharp from "sharp";
 import { PinataSDK } from "pinata";
 
 const pinata = new PinataSDK({
@@ -20,7 +21,8 @@ export async function pinSVG(
 	}
 
 	try {
-		const file = new File([svg], `${name}.svg`, { type: "image/svg+xml" });
+		const pngBuffer = await sharp(Buffer.from(svg)).resize(500, 500).png().toBuffer();
+		const file = new File([pngBuffer], `${name}.png`, { type: "image/png" });
 		const result = await pinata.upload.public.file(file);
 		const gateway = process.env.PINATA_GATEWAY;
 		return {
@@ -28,7 +30,7 @@ export async function pinSVG(
 			gatewayUrl: `https://${gateway}/ipfs/${result.cid}`,
 		};
 	} catch (error) {
-		console.error("[pinata] SVG pin failed:", error instanceof Error ? error.message : error);
+		console.error("[pinata] PNG pin failed:", error instanceof Error ? error.message : error);
 		return null;
 	}
 }
