@@ -97,7 +97,9 @@ Return this exact JSON:
 		output = JSON.parse(json);
 	} catch {
 		try {
-			let repaired = json.replace(/,\s*([}\]])/g, "$1").replace(/([}\]])(\s*")/g, "$1,$2");
+			let repaired = json
+				.replace(/,\s*([}\]])/g, "$1")
+				.replace(/([}\]])(\s*")/g, "$1,$2");
 			const opens = (repaired.match(/{/g) || []).length;
 			const closes = (repaired.match(/}/g) || []).length;
 			if (opens > closes) {
@@ -106,7 +108,10 @@ Return this exact JSON:
 			}
 			output = JSON.parse(repaired);
 		} catch {
-			console.error("[brand-guidelines] JSON repair failed, raw:", json.slice(0, 500));
+			console.error(
+				"[brand-guidelines] JSON repair failed, raw:",
+				json.slice(0, 500),
+			);
 			return c.json({ error: "Failed to parse brand guidelines output" }, 500);
 		}
 	}
@@ -115,7 +120,8 @@ Return this exact JSON:
 	const imageUri = svgToDataUri(svg);
 
 	const pinResult = await pinSVG(svg, `guidelines-${Date.now()}`);
-	const viewUrl = pinResult?.gatewayUrl || null;
+	const ipfsImageUrl = pinResult?.gatewayUrl || undefined;
+	const viewUrl = imageUri;
 
 	const payerAddress = extractPayerAddress(
 		c.req.header("PAYMENT-SIGNATURE") || null,
@@ -129,7 +135,13 @@ Return this exact JSON:
 
 	if (payerAddress) {
 		const mintResult = await Promise.race([
-			mintBrandKitNFT(output, "guidelines", payerAddress, imageUri, viewUrl || undefined),
+			mintBrandKitNFT(
+				output,
+				"guidelines",
+				payerAddress,
+				imageUri,
+				ipfsImageUrl,
+			),
 			new Promise<null>((resolve) => setTimeout(() => resolve(null), 12000)),
 		]);
 

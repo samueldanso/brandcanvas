@@ -21,9 +21,11 @@ export async function pinSVG(
 	}
 
 	try {
-		const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 500 } });
+		const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 1200 } });
 		const pngBuffer = resvg.render().asPng();
-		const file = new File([new Uint8Array(pngBuffer)], `${name}.png`, { type: "image/png" });
+		const file = new File([new Uint8Array(pngBuffer)], `${name}.png`, {
+			type: "image/png",
+		});
 		const result = await pinata.upload.public.file(file);
 		const gateway = process.env.PINATA_GATEWAY;
 		return {
@@ -31,7 +33,10 @@ export async function pinSVG(
 			gatewayUrl: `https://${gateway}/ipfs/${result.cid}`,
 		};
 	} catch (error) {
-		console.error("[pinata] PNG pin failed:", error instanceof Error ? error.message : error);
+		console.error(
+			"[pinata] PNG pin failed:",
+			error instanceof Error ? error.message : error,
+		);
 		return null;
 	}
 }
@@ -46,11 +51,9 @@ export async function pinMetadata(
 	}
 
 	try {
-		const file = new File(
-			[JSON.stringify(metadata)],
-			`${name}.json`,
-			{ type: "application/json" },
-		);
+		const file = new File([JSON.stringify(metadata)], `${name}.json`, {
+			type: "application/json",
+		});
 		const result = await pinata.upload.public.file(file);
 		const gateway = process.env.PINATA_GATEWAY;
 		return {
@@ -58,7 +61,10 @@ export async function pinMetadata(
 			gatewayUrl: `https://${gateway}/ipfs/${result.cid}`,
 		};
 	} catch (error) {
-		console.error("[pinata] metadata pin failed:", error instanceof Error ? error.message : error);
+		console.error(
+			"[pinata] metadata pin failed:",
+			error instanceof Error ? error.message : error,
+		);
 		return null;
 	}
 }

@@ -77,7 +77,7 @@ export async function mintBrandKitNFT(
 			abi: NFT_ABI,
 			functionName: "totalSupply",
 		});
-		const tokenId = Number(totalSupply) + 1;
+		const tokenId = Number(totalSupply);
 
 		const client = createWalletClient({
 			account,
@@ -91,7 +91,12 @@ export async function mintBrandKitNFT(
 			address: NFT_CONTRACT,
 			abi: NFT_ABI,
 			functionName: "mint",
-			args: [payerAddress as `0x${string}`, contentHash, kitType, finalImageUri],
+			args: [
+				payerAddress as `0x${string}`,
+				contentHash,
+				kitType,
+				finalImageUri,
+			],
 		});
 
 		return {
@@ -102,7 +107,9 @@ export async function mintBrandKitNFT(
 			txHash,
 			chain: "X Layer (eip155:196)",
 			explorerUrl: `https://www.okx.com/explorer/xlayer/tx/${txHash}`,
-			imageUrl: ipfsImageUrl || `https://brandcanvas.onrender.com/assets/${tokenId}/image`,
+			imageUrl:
+				ipfsImageUrl ||
+				`https://brandcanvas.onrender.com/assets/${tokenId}/image`,
 			metadataUrl: `https://brandcanvas.onrender.com/assets/${tokenId}/metadata`,
 		};
 	} catch (error) {

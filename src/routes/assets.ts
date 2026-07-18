@@ -1,8 +1,9 @@
 import type { Context } from "hono";
 
 /**
- * Serve generated SVG art by token ID.
- * Agents can reference this URL directly: GET /assets/{tokenId}.svg
+ * Serve generated art by token ID.
+ * For SVG data URI tokens: decodes and returns SVG directly.
+ * For IPFS/HTTP tokens: redirects to the image URL.
  */
 export async function handleAssetSVG(c: Context) {
 	const tokenId = c.req.param("tokenId");
@@ -21,7 +22,7 @@ export async function handleAssetSVG(c: Context) {
 		"0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B" as `0x${string}`;
 
 	const abi = parseAbi([
-		"function tokenURI(uint256 tokenId) view returns (string)",
+		"function getBrandKit(uint256 tokenId) view returns ((bytes32 contentHash, string kitType, string imageUri, uint256 timestamp))",
 	]);
 
 	try {
@@ -30,33 +31,33 @@ export async function handleAssetSVG(c: Context) {
 			transport: http("https://rpc.xlayer.tech"),
 		});
 
-		const tokenURI = (await client.readContract({
+		const kit = (await client.readContract({
 			address: NFT_CONTRACT,
 			abi,
-			functionName: "tokenURI",
+			functionName: "getBrandKit",
 			args: [BigInt(tokenId)],
-		})) as string;
+		})) as unknown as [string, string, string, bigint];
 
-		// Decode base64 JSON from tokenURI
-		const jsonBase64 = tokenURI.replace(
-			"data:application/json;base64,",
-			"",
-		);
-		const metadata = JSON.parse(Buffer.from(jsonBase64, "base64").toString());
-		const imageUri = metadata.image;
+		const imageUri = kit[2];
 
-		if (!imageUri || !imageUri.startsWith("data:image/svg+xml;base64,")) {
-			return c.json({ error: "No SVG image for this token" }, 404);
+		if (!imageUri) {
+			return c.json({ error: "No image for this token" }, 404);
 		}
 
-		// Decode the SVG
-		const svgBase64 = imageUri.replace("data:image/svg+xml;base64,", "");
-		const svg = Buffer.from(svgBase64, "base64").toString();
+		if (imageUri.startsWith("data:image/svg+xml;base64,")) {
+			const svgBase64 = imageUri.replace("data:image/svg+xml;base64,", "");
+			const svg = Buffer.from(svgBase64, "base64").toString();
+			return c.body(svg, 200, {
+				"Content-Type": "image/svg+xml",
+				"Cache-Control": "public, max-age=31536000, immutable",
+			});
+		}
 
-		return c.body(svg, 200, {
-			"Content-Type": "image/svg+xml",
-			"Cache-Control": "public, max-age=31536000, immutable",
-		});
+		if (imageUri.startsWith("https://") || imageUri.startsWith("ipfs://")) {
+			return c.redirect(imageUri, 302);
+		}
+
+		return c.json({ error: "Unsupported image format" }, 404);
 	} catch {
 		return c.json({ error: "Token not found" }, 404);
 	}
@@ -94,26 +95,53 @@ export async function handleAssetMetadata(c: Context) {
 			transport: http("https://rpc.xlayer.tech"),
 		});
 
-		const [tokenURI, owner] = await Promise.all([
-			client.readContract({
+		const owner = (await client.readContract({
+			address: NFT_CONTRACT,
+			abi,
+			functionName: "ownerOf",
+			args: [BigInt(tokenId)],
+		})) as string;
+
+		let metadata: Record<string, unknown>;
+
+		try {
+			const tokenURIResult = (await client.readContract({
 				address: NFT_CONTRACT,
 				abi,
 				functionName: "tokenURI",
 				args: [BigInt(tokenId)],
-			}) as Promise<string>,
-			client.readContract({
+			})) as string;
+
+			const jsonBase64 = tokenURIResult.replace(
+				"data:application/json;base64,",
+				"",
+			);
+			metadata = JSON.parse(Buffer.from(jsonBase64, "base64").toString());
+		} catch {
+			const kit = (await client.readContract({
 				address: NFT_CONTRACT,
 				abi,
-				functionName: "ownerOf",
+				functionName: "getBrandKit",
 				args: [BigInt(tokenId)],
-			}) as Promise<string>,
-		]);
+			})) as unknown as [string, string, string, bigint];
 
-		const jsonBase64 = tokenURI.replace(
-			"data:application/json;base64,",
-			"",
-		);
-		const metadata = JSON.parse(Buffer.from(jsonBase64, "base64").toString());
+			metadata = {
+				name: `BrandCanvas #${tokenId} - ${kit[1]}`,
+				description:
+					"AI-generated brand asset with on-chain IP provenance. Created by BrandCanvas on X Layer.",
+				image: kit[2],
+				attributes: [
+					{ trait_type: "Kit Type", value: kit[1] },
+					{ trait_type: "Content Hash", value: kit[0] },
+					{
+						trait_type: "Created",
+						display_type: "date",
+						value: Number(kit[3]),
+					},
+				],
+				external_url: "https://brandcanvas.onrender.com",
+			};
+		}
 
 		return c.json({
 			...metadata,
@@ -121,7 +149,7 @@ export async function handleAssetMetadata(c: Context) {
 			owner,
 			contract: NFT_CONTRACT,
 			chain: "X Layer (eip155:196)",
-			svgUrl: `https://brandcanvas.onrender.com/assets/${tokenId}.svg`,
+			imageUrl: `https://brandcanvas.onrender.com/assets/${tokenId}/image`,
 		});
 	} catch {
 		return c.json({ error: "Token not found" }, 404);

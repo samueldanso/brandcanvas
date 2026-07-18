@@ -73,7 +73,9 @@ Return this exact JSON:
 		try {
 			output = JSON.parse(json);
 		} catch {
-			const repaired = json.replace(/,\s*([}\]])/g, "$1").replace(/([}\]])(\s*")/g, "$1,$2");
+			const repaired = json
+				.replace(/,\s*([}\]])/g, "$1")
+				.replace(/([}\]])(\s*")/g, "$1,$2");
 			output = JSON.parse(repaired);
 		}
 
@@ -81,7 +83,8 @@ Return this exact JSON:
 		const imageUri = svgToDataUri(svg);
 
 		const pinResult = await pinSVG(svg, `fonts-${Date.now()}`);
-		const viewUrl = pinResult?.gatewayUrl || null;
+		const ipfsImageUrl = pinResult?.gatewayUrl || undefined;
+		const viewUrl = imageUri;
 
 		const payerAddress = extractPayerAddress(
 			c.req.header("PAYMENT-SIGNATURE") || null,
@@ -95,7 +98,7 @@ Return this exact JSON:
 
 		if (payerAddress) {
 			const mintResult = await Promise.race([
-				mintBrandKitNFT(output, "fonts", payerAddress, imageUri, viewUrl || undefined),
+				mintBrandKitNFT(output, "fonts", payerAddress, imageUri, ipfsImageUrl),
 				new Promise<null>((resolve) => setTimeout(() => resolve(null), 12000)),
 			]);
 
