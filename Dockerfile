@@ -9,7 +9,7 @@ ENV PATH="/root/.bun/bin:${PATH}"
 
 # Copy package files and install
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Copy source
 COPY . .
