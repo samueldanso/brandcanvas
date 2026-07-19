@@ -388,17 +388,19 @@ export function renderGuidelinesDelivery(
 	const positioning = (data.positioning as string) || "";
 	const voiceAndTone = data.voiceAndTone as
 		| {
-				personality?: string;
+				personality?: string | string[];
 				voice?: string;
 				doSay?: string[];
 				dontSay?: string[];
 		  }
 		| undefined;
-	const colorSystem = data.colorSystem as Record<string, string> | undefined;
+	const colorSystem = data.colorSystem as
+		| Record<string, string | { hex?: string; name?: string }>
+		| undefined;
 	const typography = data.typography as
 		| {
-				headingFont?: string;
-				bodyFont?: string;
+				headingFont?: string | { family?: string };
+				bodyFont?: string | { family?: string };
 				scale?: string;
 				css?: string;
 		  }
@@ -408,17 +410,17 @@ export function renderGuidelinesDelivery(
 
 	const colorChips = colorSystem
 		? Object.entries(colorSystem)
-				.map(
-					([role, hex]) =>
-						`<div class="color-chip"><div class="chip-swatch" style="background: ${hex}"></div><span class="chip-role">${role}</span><span class="chip-hex">${hex}</span></div>`,
-				)
+				.map(([role, val]) => {
+					const hex = typeof val === "string" ? val : val?.hex || "#888";
+					return `<div class="color-chip"><div class="chip-swatch" style="background: ${hex}"></div><span class="chip-role">${role}</span><span class="chip-hex">${hex}</span></div>`;
+				})
 				.join("")
 		: "";
 
 	const voiceSection = voiceAndTone
 		? `<section>
 		<h2>Voice &amp; Tone</h2>
-		${voiceAndTone.personality ? `<p class="voice-personality">${voiceAndTone.personality}</p>` : ""}
+		${voiceAndTone.personality ? `<p class="voice-personality">${Array.isArray(voiceAndTone.personality) ? voiceAndTone.personality.join(", ") : voiceAndTone.personality}</p>` : ""}
 		${voiceAndTone.voice ? `<p class="voice-desc">${voiceAndTone.voice}</p>` : ""}
 		<div class="do-dont-grid">
 			${
@@ -477,8 +479,8 @@ export function renderGuidelinesDelivery(
 			? `<section>
 		<h2>Typography</h2>
 		<div class="typo-info">
-			${typography.headingFont ? `<p><strong>Heading:</strong> ${typography.headingFont}</p>` : ""}
-			${typography.bodyFont ? `<p><strong>Body:</strong> ${typography.bodyFont}</p>` : ""}
+			${typography.headingFont ? `<p><strong>Heading:</strong> ${typeof typography.headingFont === "string" ? typography.headingFont : typography.headingFont?.family || ""}</p>` : ""}
+			${typography.bodyFont ? `<p><strong>Body:</strong> ${typeof typography.bodyFont === "string" ? typography.bodyFont : typography.bodyFont?.family || ""}</p>` : ""}
 			${typography.scale ? `<p><strong>Scale:</strong> ${typography.scale}</p>` : ""}
 		</div>
 		${typography.css ? `<div class="code-block">${typography.css}</div>` : ""}
