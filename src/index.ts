@@ -8,14 +8,15 @@ import {
 } from "@okxweb3/x402-hono";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { handleAssetMetadata, handleAssetSVG } from "./routes/assets";
 import { handleBrandAssets } from "./routes/brand-assets";
 import { handleBrandColors } from "./routes/brand-colors";
 import { handleBrandExtract } from "./routes/brand-extract";
 import { handleBrandGuidelines } from "./routes/brand-guidelines";
 import { handleBrandTypography } from "./routes/brand-typography";
+import { handleDelivery } from "./routes/delivery";
 import { handleFontsPair } from "./routes/fonts-pair";
 import { handlePaletteGenerate } from "./routes/palette-generate";
-import { handleAssetMetadata, handleAssetSVG } from "./routes/assets";
 
 const app = new Hono();
 
@@ -219,6 +220,7 @@ app.get("/", (c) =>
 // Public asset endpoints — serve NFT art and metadata (not payment-gated)
 app.get("/assets/:tokenId/image", handleAssetSVG);
 app.get("/assets/:tokenId/metadata", handleAssetMetadata);
+app.get("/delivery/:tokenId", handleDelivery);
 
 export default {
 	port: Number(process.env.PORT ?? 3000),

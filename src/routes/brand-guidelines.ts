@@ -1,7 +1,8 @@
 import type { Context } from "hono";
 import { invokeClaude } from "../lib/bedrock";
+import { registerDelivery } from "../lib/metadata-registry";
 import { extractPayerAddress, mintBrandKitNFT } from "../lib/nft";
-import { pinSVG } from "../lib/pinata";
+import { pinMetadata, pinSVG } from "../lib/pinata";
 import { generateGuidelinesSVG, svgToDataUri } from "../lib/svg";
 
 export async function handleBrandGuidelines(c: Context) {
@@ -121,7 +122,6 @@ Return this exact JSON:
 
 	const pinResult = await pinSVG(svg, `guidelines-${Date.now()}`);
 	const ipfsImageUrl = pinResult?.gatewayUrl || undefined;
-	const viewUrl = imageUri;
 
 	const payerAddress = extractPayerAddress(
 		c.req.header("PAYMENT-SIGNATURE") || null,
@@ -157,6 +157,19 @@ Return this exact JSON:
 				owner: mintResult.owner,
 				status: "minted",
 			};
+
+			const metaPin = await pinMetadata(
+				output,
+				`brandcanvas-${mintResult.tokenId}`,
+			);
+			if (metaPin && ipfsImageUrl) {
+				registerDelivery(
+					mintResult.tokenId,
+					"guidelines",
+					metaPin.gatewayUrl,
+					ipfsImageUrl,
+				);
+			}
 		} else {
 			nft = {
 				contract: "0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B",
@@ -166,5 +179,10 @@ Return this exact JSON:
 		}
 	}
 
-	return c.json({ ...output, viewUrl, nft });
+	const BASE_URL = process.env.BASE_URL || "https://brandcanvas.onrender.com";
+	const deliveryUrl = nft.tokenId
+		? `${BASE_URL}/delivery/${nft.tokenId}`
+		: ipfsImageUrl || imageUri;
+
+	return c.json({ ...output, deliveryUrl, nft });
 }
