@@ -9,6 +9,7 @@ const pinata = new PinataSDK({
 export interface PinResult {
 	cid: string;
 	gatewayUrl: string;
+	ipfsUrl: string;
 }
 
 export async function pinSVG(
@@ -21,7 +22,7 @@ export async function pinSVG(
 	}
 
 	try {
-		const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 1200 } });
+		const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 2400 } });
 		const pngBuffer = resvg.render().asPng();
 		const file = new File([new Uint8Array(pngBuffer)], `${name}.png`, {
 			type: "image/png",
@@ -31,6 +32,7 @@ export async function pinSVG(
 		return {
 			cid: result.cid,
 			gatewayUrl: `https://${gateway}/ipfs/${result.cid}`,
+			ipfsUrl: `ipfs://${result.cid}`,
 		};
 	} catch (error) {
 		console.error(
@@ -59,6 +61,7 @@ export async function pinMetadata(
 		return {
 			cid: result.cid,
 			gatewayUrl: `https://${gateway}/ipfs/${result.cid}`,
+			ipfsUrl: `ipfs://${result.cid}`,
 		};
 	} catch (error) {
 		console.error(

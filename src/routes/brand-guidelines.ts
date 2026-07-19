@@ -122,6 +122,7 @@ Return this exact JSON:
 
 	const pinResult = await pinSVG(svg, `guidelines-${Date.now()}`);
 	const ipfsImageUrl = pinResult?.gatewayUrl || undefined;
+	const ipfsProtocolUrl = pinResult?.ipfsUrl || undefined;
 
 	const payerAddress = extractPayerAddress(
 		c.req.header("PAYMENT-SIGNATURE") || null,
@@ -141,6 +142,7 @@ Return this exact JSON:
 				payerAddress,
 				imageUri,
 				ipfsImageUrl,
+				ipfsProtocolUrl,
 			),
 			new Promise<null>((resolve) => setTimeout(() => resolve(null), 12000)),
 		]);
@@ -168,6 +170,7 @@ Return this exact JSON:
 					"guidelines",
 					metaPin.gatewayUrl,
 					ipfsImageUrl,
+					mintResult.txHash,
 				);
 			}
 		} else {

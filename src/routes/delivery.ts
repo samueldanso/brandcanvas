@@ -66,11 +66,12 @@ export async function handleDelivery(c: Context) {
 		let imageUrl = "";
 		if (meta?.imageUrl) {
 			imageUrl = meta.imageUrl;
-		} else if (
-			imageUri.startsWith("https://") ||
-			imageUri.startsWith("ipfs://")
-		) {
+		} else if (imageUri.startsWith("https://")) {
 			imageUrl = imageUri;
+		} else if (imageUri.startsWith("ipfs://")) {
+			const cid = imageUri.replace("ipfs://", "");
+			const gateway = process.env.PINATA_GATEWAY || "gateway.pinata.cloud";
+			imageUrl = `https://${gateway}/ipfs/${cid}`;
 		} else {
 			imageUrl = `https://brandcanvas.onrender.com/assets/${tokenId}/image`;
 		}
@@ -107,8 +108,10 @@ export async function handleDelivery(c: Context) {
 			tokenId,
 			chain: "X Layer (eip155:196)",
 			owner: owner as string,
-			txHash: (meta as unknown as Record<string, string>).txHash || "",
-			explorerUrl: `https://www.okx.com/explorer/xlayer/address/${NFT_CONTRACT}`,
+			txHash: meta.txHash || "",
+			explorerUrl: meta.txHash
+				? `https://www.okx.com/explorer/xlayer/tx/${meta.txHash}`
+				: `https://www.okx.com/explorer/xlayer/address/${NFT_CONTRACT}`,
 			imageUrl,
 			contract: NFT_CONTRACT,
 		};

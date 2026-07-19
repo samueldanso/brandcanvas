@@ -36,7 +36,11 @@ function renderNftReceipt(nft: NftInfo): string {
 			</div>
 			<div class="receipt-item full-width">
 				<span class="label">Transaction</span>
-				<span class="value"><a href="${nft.explorerUrl}" target="_blank">${truncateAddress(nft.txHash)}</a></span>
+				<span class="value">${nft.txHash ? `<a href="https://www.okx.com/explorer/xlayer/tx/${nft.txHash}" target="_blank">${truncateAddress(nft.txHash)}</a>` : "—"}</span>
+			</div>
+			<div class="receipt-item full-width">
+				<span class="label">View NFT</span>
+				<span class="value"><a href="https://www.okx.com/web3/detail/nft/xlayer/${nft.contract}/${nft.tokenId}" target="_blank">View on OKX Explorer →</a></span>
 			</div>
 		</div>
 	</section>`;

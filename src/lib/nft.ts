@@ -55,6 +55,7 @@ export async function mintBrandKitNFT(
 	payerAddress: string,
 	imageUri: string,
 	ipfsImageUrl?: string,
+	ipfsProtocolUrl?: string,
 ): Promise<MintResult | null> {
 	const privateKey = process.env.DEPLOYER_PRIVATE_KEY as `0x${string}`;
 
@@ -85,7 +86,7 @@ export async function mintBrandKitNFT(
 			transport: http("https://rpc.xlayer.tech"),
 		});
 
-		const finalImageUri = ipfsImageUrl || imageUri;
+		const finalImageUri = ipfsProtocolUrl || ipfsImageUrl || imageUri;
 
 		const txHash = await client.writeContract({
 			address: NFT_CONTRACT,

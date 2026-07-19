@@ -53,8 +53,14 @@ export async function handleAssetSVG(c: Context) {
 			});
 		}
 
-		if (imageUri.startsWith("https://") || imageUri.startsWith("ipfs://")) {
+		if (imageUri.startsWith("https://")) {
 			return c.redirect(imageUri, 302);
+		}
+
+		if (imageUri.startsWith("ipfs://")) {
+			const cid = imageUri.replace("ipfs://", "");
+			const gateway = process.env.PINATA_GATEWAY || "gateway.pinata.cloud";
+			return c.redirect(`https://${gateway}/ipfs/${cid}`, 302);
 		}
 
 		return c.json({ error: "Unsupported image format" }, 404);

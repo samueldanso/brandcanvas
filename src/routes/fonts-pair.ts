@@ -85,6 +85,7 @@ Return this exact JSON:
 
 		const pinResult = await pinSVG(svg, `fonts-${Date.now()}`);
 		const ipfsImageUrl = pinResult?.gatewayUrl || undefined;
+		const ipfsProtocolUrl = pinResult?.ipfsUrl || undefined;
 
 		const payerAddress = extractPayerAddress(
 			c.req.header("PAYMENT-SIGNATURE") || null,
@@ -98,7 +99,14 @@ Return this exact JSON:
 
 		if (payerAddress) {
 			const mintResult = await Promise.race([
-				mintBrandKitNFT(output, "fonts", payerAddress, imageUri, ipfsImageUrl),
+				mintBrandKitNFT(
+					output,
+					"fonts",
+					payerAddress,
+					imageUri,
+					ipfsImageUrl,
+					ipfsProtocolUrl,
+				),
 				new Promise<null>((resolve) => setTimeout(() => resolve(null), 12000)),
 			]);
 
@@ -125,6 +133,7 @@ Return this exact JSON:
 						"fonts",
 						metaPin.gatewayUrl,
 						ipfsImageUrl,
+						mintResult.txHash,
 					);
 				}
 			} else {
