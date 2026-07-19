@@ -36,12 +36,13 @@ Entry point: `src/index.ts` (Hono app, Bun default export).
 
 ### Public endpoints (no payment)
 
-| Route                       | Handler                  |
-| --------------------------- | ------------------------ |
-| `/assets/:tokenId/image`    | `src/routes/assets.ts`   |
-| `/assets/:tokenId/metadata` | `src/routes/assets.ts`   |
-| `/health`                   | inline in `src/index.ts` |
-| `/`                         | inline in `src/index.ts` |
+| Route                       | Handler                    |
+| --------------------------- | -------------------------- |
+| `/delivery/:tokenId`        | `src/routes/delivery.ts`   |
+| `/assets/:tokenId/image`    | `src/routes/assets.ts`     |
+| `/assets/:tokenId/metadata` | `src/routes/assets.ts`     |
+| `/health`                   | inline in `src/index.ts`   |
+| `/`                         | inline in `src/index.ts`   |
 
 ### Key modules
 
@@ -50,6 +51,10 @@ Entry point: `src/index.ts` (Hono app, Bun default export).
 | `src/lib/bedrock.ts`            | AWS Bedrock client (Claude Sonnet 4.6)         |
 | `src/lib/nft.ts`                | ERC-721 minting on X Layer                     |
 | `src/lib/svg.ts`                | Generative SVG artwork for NFT minting         |
+| `src/lib/pinata.ts`             | IPFS pinning (PNG artwork + metadata JSON)     |
+| `src/lib/delivery-templates.ts` | HTML templates for visual delivery pages       |
+| `src/lib/metadata-registry.ts`  | In-memory registry mapping tokenId → IPFS URLs |
+| `src/routes/delivery.ts`        | Visual presentation page per token             |
 | `src/branding/index.ts`         | Live brand study (Playwright extraction)       |
 | `src/branding/page-script.ts`   | In-page DOM evaluation script                  |
 | `src/branding/processor.ts`     | Raw data → structured brand profile            |
