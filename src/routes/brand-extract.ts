@@ -31,8 +31,7 @@ function toDesignTokens(profile: Record<string, unknown>): {
 		tokens["--brand-font-body"] = `'${fontFamilies.primary}', sans-serif`;
 	if (fontFamilies.heading)
 		tokens["--brand-font-heading"] = `'${fontFamilies.heading}', sans-serif`;
-	if (spacing.baseUnit)
-		tokens["--brand-space-unit"] = `${spacing.baseUnit}px`;
+	if (spacing.baseUnit) tokens["--brand-space-unit"] = `${spacing.baseUnit}px`;
 	if (spacing.borderRadius)
 		tokens["--brand-radius"] = String(spacing.borderRadius);
 

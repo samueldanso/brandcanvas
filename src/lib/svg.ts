@@ -17,7 +17,8 @@ export function generatePaletteSVG(colors: PaletteColor[]): string {
 	const palette = colors.slice(0, 5).map((c, i) => ({
 		hex: c.hex || ["#4A1942", "#C05780", "#FF8C42", "#F4E04D", "#F8F4E1"][i],
 		name: c.name || `Color ${i + 1}`,
-		role: c.role || ["primary", "secondary", "accent", "neutral", "background"][i],
+		role:
+			c.role || ["primary", "secondary", "accent", "neutral", "background"][i],
 	}));
 
 	const swatches = palette
@@ -98,12 +99,17 @@ export function generateFontsSVG(
  * Generate a polished brand identity card SVG from guidelines.
  * Asymmetric layout: primary-color left band, brand name hero, integrated color chips.
  */
-export function generateGuidelinesSVG(guidelines: Record<string, unknown>): string {
+export function generateGuidelinesSVG(
+	guidelines: Record<string, unknown>,
+): string {
 	const name = (guidelines.brandName as string) || "Brand";
 	const initial = name.charAt(0).toUpperCase();
-	const colors = (guidelines.colorSystem || guidelines.colorGuidelines || {}) as Record<string, { hex?: string }>;
+	const colors = (guidelines.colorSystem ||
+		guidelines.colorGuidelines ||
+		{}) as Record<string, { hex?: string }>;
 	const primary = colors.primary?.hex || "#4F6BED";
-	const secondary = colors.secondary?.hex || colors.neutralDark?.hex || "#1A1A2E";
+	const secondary =
+		colors.secondary?.hex || colors.neutralDark?.hex || "#1A1A2E";
 	const accent = colors.accent?.hex || "#00D4AA";
 
 	const displayName = name.length > 16 ? `${name.substring(0, 16)}...` : name;
