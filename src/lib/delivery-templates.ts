@@ -40,7 +40,7 @@ function renderNftReceipt(nft: NftInfo): string {
 			</div>
 			<div class="receipt-item full-width">
 				<span class="label">View NFT</span>
-				<span class="value"><a href="https://www.okx.com/web3/detail/nft/xlayer/${nft.contract}/${nft.tokenId}" target="_blank">View on OKX Explorer →</a></span>
+				<span class="value"><a href="https://web3.okx.com/explorer/x-layer/evm/assets/${nft.contract.toLowerCase()}/${nft.tokenId}" target="_blank">View on OKX Explorer →</a></span>
 			</div>
 		</div>
 	</section>`;
