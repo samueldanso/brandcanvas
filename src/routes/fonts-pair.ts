@@ -150,7 +150,7 @@ Return this exact JSON:
 			? `${BASE_URL}/delivery/${nft.tokenId}`
 			: ipfsImageUrl || imageUri;
 
-		return c.json({ ...output, deliveryUrl, nft });
+		return c.json({ ...output, viewUrl: imageUri, deliveryUrl, nft });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : "Unknown error";
 		console.error("[fonts-pair] Bedrock error:", msg);

@@ -187,5 +187,5 @@ Return this exact JSON:
 		? `${BASE_URL}/delivery/${nft.tokenId}`
 		: ipfsImageUrl || imageUri;
 
-	return c.json({ ...output, deliveryUrl, nft });
+	return c.json({ ...output, viewUrl: imageUri, deliveryUrl, nft });
 }
