@@ -56,12 +56,14 @@ function renderDownloadSection(
 	tokenId?: number,
 ): string {
 	const downloadHref = tokenId ? `/download/${tokenId}` : imageUrl;
+	const viewHref = imageUrl;
 	return `
 	<section class="download-section">
 		<a href="${downloadHref}" class="download-btn">
 			<svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 1v10M8 11L4 7M8 11l4-4M2 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 			Download Artwork
 		</a>
+		<a href="${viewHref}" target="_blank" class="view-link">Open in new tab ↗</a>
 		<span class="download-hint">High-resolution PNG — minted on IPFS${explorerUrl ? ` · <a href="${explorerUrl}" target="_blank" style="color: var(--accent)">View NFT →</a>` : ""}</span>
 	</section>`;
 }
@@ -324,6 +326,15 @@ section { margin-bottom: 36px; }
 	font-size: 0.75rem;
 	color: var(--text-muted);
 }
+.view-link {
+	display: inline-block;
+	margin-top: 8px;
+	font-size: 0.78rem;
+	color: var(--text-muted);
+	text-decoration: none;
+	transition: color 0.2s;
+}
+.view-link:hover { color: var(--accent); }
 .code-block {
 	position: relative;
 	background: rgba(0, 0, 0, 0.4);
