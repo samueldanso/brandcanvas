@@ -100,7 +100,7 @@ ${extraHead}
 	--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 [data-theme="light"] {
-	--bg: #FDFCF9;
+	--bg: #F4F2ED;
 	--surface: rgba(0, 0, 0, 0.02);
 	--surface-border: rgba(0, 0, 0, 0.08);
 	--border: rgba(0, 0, 0, 0.06);
@@ -159,7 +159,7 @@ header {
 .theme-toggle .moon { display: block; }
 [data-theme="light"] .theme-toggle .sun { display: block; }
 [data-theme="light"] .theme-toggle .moon { display: none; }
-[data-theme="light"] .download-btn { background: var(--text-primary); color: #FDFCF9; }
+[data-theme="light"] .download-btn { background: var(--text-primary); color: #F4F2ED; }
 [data-theme="light"] .artwork-section img { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); }
 [data-theme="light"] .accent-line { opacity: 0.6; }
 [data-theme="light"] .code-block { background: rgba(0, 0, 0, 0.04); border-color: rgba(0, 0, 0, 0.1); }
