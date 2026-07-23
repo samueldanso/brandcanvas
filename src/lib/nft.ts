@@ -86,7 +86,7 @@ export async function mintBrandKitNFT(
 			transport: http("https://rpc.xlayer.tech"),
 		});
 
-		const finalImageUri = ipfsProtocolUrl || ipfsImageUrl || imageUri;
+		const finalImageUri = ipfsImageUrl || ipfsProtocolUrl || imageUri;
 
 		const txHash = await client.writeContract({
 			address: NFT_CONTRACT,
