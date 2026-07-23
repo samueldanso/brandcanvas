@@ -43,6 +43,26 @@ export async function pinSVG(
 	}
 }
 
+export async function findPinByName(name: string): Promise<string | null> {
+	if (!process.env.PINATA_JWT) return null;
+	try {
+		const result = await pinata.files.public.list().name(name);
+		const files = result.files || [];
+		if (files.length > 0) {
+			const cid = files[0].cid;
+			const gateway = process.env.PINATA_GATEWAY;
+			return `https://${gateway}/ipfs/${cid}`;
+		}
+		return null;
+	} catch (error) {
+		console.error(
+			"[pinata] findPinByName failed:",
+			error instanceof Error ? error.message : error,
+		);
+		return null;
+	}
+}
+
 export async function pinMetadata(
 	metadata: object,
 	name: string,

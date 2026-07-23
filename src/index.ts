@@ -221,6 +221,60 @@ app.get("/", (c) =>
 app.get("/assets/:tokenId/image", handleAssetSVG);
 app.get("/assets/:tokenId/metadata", handleAssetMetadata);
 app.get("/delivery/:tokenId", handleDelivery);
+app.get("/download/:tokenId", async (c) => {
+	const tokenId = Number(c.req.param("tokenId"));
+	if (!tokenId || Number.isNaN(tokenId))
+		return c.json({ error: "Invalid tokenId" }, 400);
+
+	const { createPublicClient, http, parseAbi } = await import("viem");
+	const client = createPublicClient({
+		chain: {
+			id: 196,
+			name: "X Layer",
+			nativeCurrency: { name: "OKB", symbol: "OKB", decimals: 18 },
+			rpcUrls: { default: { http: ["https://rpc.xlayer.tech"] } },
+		} as const,
+		transport: http("https://rpc.xlayer.tech"),
+	});
+	const NFT_CONTRACT =
+		"0xF83957F96ca9b4c6B1c36EC43a748f9924eA8c7B" as `0x${string}`;
+	const abi = parseAbi([
+		"function getBrandKit(uint256 tokenId) view returns ((bytes32 contentHash, string kitType, string imageUri, uint256 timestamp))",
+	]);
+
+	try {
+		const kitRaw = await client.readContract({
+			address: NFT_CONTRACT,
+			abi,
+			functionName: "getBrandKit",
+			args: [BigInt(tokenId)],
+		});
+		const kit = kitRaw as unknown as { imageUri: string; kitType: string };
+		let imageUrl = "";
+		if (kit.imageUri.startsWith("ipfs://")) {
+			const cid = kit.imageUri.replace("ipfs://", "");
+			const gateway = process.env.PINATA_GATEWAY || "gateway.pinata.cloud";
+			imageUrl = `https://${gateway}/ipfs/${cid}`;
+		} else {
+			imageUrl = kit.imageUri;
+		}
+
+		const res = await fetch(imageUrl, {
+			signal: AbortSignal.timeout(10000),
+		});
+		if (!res.ok) return c.json({ error: "Image fetch failed" }, 502);
+
+		const buffer = await res.arrayBuffer();
+		return new Response(buffer, {
+			headers: {
+				"Content-Type": "image/png",
+				"Content-Disposition": `attachment; filename="brandcanvas-${tokenId}-${kit.kitType}.png"`,
+			},
+		});
+	} catch {
+		return c.json({ error: "Token not found" }, 404);
+	}
+});
 
 export default {
 	port: Number(process.env.PORT ?? 3000),

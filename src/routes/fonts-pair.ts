@@ -8,10 +8,11 @@ import { generateFontsSVG, svgToDataUri } from "../lib/svg";
 export async function handleFontsPair(c: Context) {
 	const body =
 		c.req.method === "POST" ? await c.req.json().catch(() => ({})) : {};
-	const { style, mood, useCase } = body as {
+	const { style, mood, useCase, brandName } = body as {
 		style?: string;
 		mood?: string;
 		useCase?: string;
+		brandName?: string;
 	};
 
 	if (!style && !mood)
@@ -21,7 +22,7 @@ export async function handleFontsPair(c: Context) {
 
 	const userPrompt = `Create 3 production-ready font pairings:
 
-BRIEF:
+BRIEF:${brandName ? `\n- Brand: ${brandName}` : ""}
 - Style: ${style || "modern"}
 - Mood: ${mood || "professional"}
 - Use case: ${useCase || "SaaS product / marketing site"}
@@ -80,6 +81,8 @@ Return this exact JSON:
 			output = JSON.parse(repaired);
 		}
 
+		if (brandName) output.brandName = brandName;
+
 		const svg = generateFontsSVG(output.pairings || []);
 		const imageUri = svgToDataUri(svg);
 
@@ -124,7 +127,7 @@ Return this exact JSON:
 				};
 
 				const metaPin = await pinMetadata(
-					output,
+					{ ...output, _txHash: mintResult.txHash },
 					`brandcanvas-${mintResult.tokenId}`,
 				);
 				if (metaPin && ipfsImageUrl) {

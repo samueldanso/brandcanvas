@@ -161,7 +161,7 @@ Return this exact JSON:
 			};
 
 			const metaPin = await pinMetadata(
-				output,
+				{ ...output, _txHash: mintResult.txHash },
 				`brandcanvas-${mintResult.tokenId}`,
 			);
 			if (metaPin && ipfsImageUrl) {

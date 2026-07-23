@@ -7,6 +7,7 @@ import {
 	renderPaletteDelivery,
 } from "../lib/delivery-templates";
 import { getDeliveryMeta } from "../lib/metadata-registry";
+import { findPinByName } from "../lib/pinata";
 
 export async function handleDelivery(c: Context) {
 	const tokenId = Number(c.req.param("tokenId"));
@@ -76,7 +77,12 @@ export async function handleDelivery(c: Context) {
 			imageUrl = `https://brandcanvas.onrender.com/assets/${tokenId}/image`;
 		}
 
-		if (!meta?.metadataUrl) {
+		let metadataUrl = meta?.metadataUrl || null;
+		if (!metadataUrl) {
+			metadataUrl = await findPinByName(`brandcanvas-${tokenId}`);
+		}
+
+		if (!metadataUrl) {
 			const html = renderFallbackDelivery(
 				tokenId,
 				kitType,
@@ -88,7 +94,7 @@ export async function handleDelivery(c: Context) {
 
 		let data: Record<string, unknown> = {};
 		try {
-			const res = await fetch(meta.metadataUrl, {
+			const res = await fetch(metadataUrl, {
 				signal: AbortSignal.timeout(5000),
 			});
 			if (res.ok) {
@@ -104,13 +110,14 @@ export async function handleDelivery(c: Context) {
 			return c.html(html);
 		}
 
+		const txHash = meta?.txHash || (data._txHash as string) || "";
 		const nftInfo: NftInfo = {
 			tokenId,
 			chain: "X Layer (eip155:196)",
 			owner: owner as string,
-			txHash: meta.txHash || "",
-			explorerUrl: meta.txHash
-				? `https://www.okx.com/explorer/xlayer/tx/${meta.txHash}`
+			txHash,
+			explorerUrl: txHash
+				? `https://www.okx.com/explorer/xlayer/tx/${txHash}`
 				: `https://www.okx.com/explorer/xlayer/address/${NFT_CONTRACT}`,
 			imageUrl,
 			contract: NFT_CONTRACT,

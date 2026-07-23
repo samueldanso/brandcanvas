@@ -8,11 +8,12 @@ import { generatePaletteSVG, svgToDataUri } from "../lib/svg";
 export async function handlePaletteGenerate(c: Context) {
 	const body =
 		c.req.method === "POST" ? await c.req.json().catch(() => ({})) : {};
-	const { mood, industry, adjectives, darkMode } = body as {
+	const { mood, industry, adjectives, darkMode, brandName } = body as {
 		mood?: string;
 		industry?: string;
 		adjectives?: string[];
 		darkMode?: boolean;
+		brandName?: string;
 	};
 
 	if (!mood) return c.json({ error: "Missing required parameter: mood" }, 400);
@@ -21,7 +22,7 @@ export async function handlePaletteGenerate(c: Context) {
 
 	const userPrompt = `Create a complete, production-ready 5-color brand palette:
 
-BRIEF:
+BRIEF:${brandName ? `\n- Brand: ${brandName}` : ""}
 - Mood: ${mood}
 - Industry: ${industry || "general"}
 - Adjectives: ${adjectives?.join(", ") || "modern, clean"}
@@ -82,6 +83,8 @@ Return this exact JSON:
 		output = JSON.parse(repaired);
 	}
 
+	if (brandName) output.brandName = brandName;
+
 	const svg = generatePaletteSVG(output.palette || []);
 	const imageUri = svgToDataUri(svg);
 
@@ -126,7 +129,7 @@ Return this exact JSON:
 			};
 
 			const metaPin = await pinMetadata(
-				output,
+				{ ...output, _txHash: mintResult.txHash },
 				`brandcanvas-${mintResult.tokenId}`,
 			);
 			if (metaPin && ipfsImageUrl) {
