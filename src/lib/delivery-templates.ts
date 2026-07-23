@@ -635,7 +635,6 @@ export function renderFontsDelivery(
 				</div>
 			</div>
 			${p.rationale ? `<p class="pairing-rationale">${p.rationale}</p>` : ""}
-			${p.htmlImport ? `<div class="code-block">${p.htmlImport}</div>` : ""}
 		</div>`,
 		)
 		.join("");
